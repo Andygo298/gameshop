@@ -1,0 +1,59 @@
+package com.github.andygo298.gameshop.service.config;
+
+import com.github.andygo298.gameshop.dao.UserDao;
+import com.github.andygo298.gameshop.dao.config.DaoConfig;
+import com.github.andygo298.gameshop.service.MailSenderService;
+import com.github.andygo298.gameshop.service.UserService;
+import com.github.andygo298.gameshop.service.impl.MailSenderServiceImpl;
+import com.github.andygo298.gameshop.service.impl.UserServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Properties;
+
+@Configuration
+@PropertySource("classpath:mail.properties")
+public class ServiceConfig {
+
+    private DaoConfig daoConfig;
+
+    public ServiceConfig(DaoConfig daoConfig) {
+        this.daoConfig = daoConfig;
+    }
+
+    @Bean
+    public UserService userService(){
+        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService(),passwordEncoder());
+    }
+
+    @Bean
+    protected PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(8);
+    }
+
+    @Bean
+    public MailSenderService mailSenderService(){
+        return new MailSenderServiceImpl(getJavaMailSender());
+    }
+
+    @Bean
+    public JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
+        mailSender.setUsername("andygo298@gmail.com");
+        mailSender.setPassword("xxxl_298");
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
+        return mailSender;
+    }
+}

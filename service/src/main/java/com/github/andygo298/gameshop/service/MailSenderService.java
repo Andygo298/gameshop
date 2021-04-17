@@ -1,0 +1,5 @@
+package com.github.andygo298.gameshop.service;
+
+public interface MailSenderService {
+    public void send(String emailTo, String subject, String message);
+}
