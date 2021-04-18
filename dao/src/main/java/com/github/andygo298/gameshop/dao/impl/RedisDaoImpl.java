@@ -17,7 +17,7 @@ public class RedisDaoImpl implements RedisDao {
     public boolean saveActivateCode(String activateCode, String userEmail) {
         try {
             redisTemplate.opsForHash().put(activateCode, activateCode, userEmail);
-            redisTemplate.expire(activateCode, 60, TimeUnit.SECONDS);
+            redisTemplate.expire(activateCode, 600, TimeUnit.SECONDS);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

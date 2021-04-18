@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-public class LoginRq implements Serializable {
+public class LoginRequest implements Serializable {
     private String email;
     private String password;
 

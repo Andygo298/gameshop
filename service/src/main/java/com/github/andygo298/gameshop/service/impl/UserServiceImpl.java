@@ -6,11 +6,14 @@ import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
 
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean saveActivateCode(User user) {
         String activateCode = UUID.randomUUID().toString();
         sendMessage(activateCode, user);
@@ -37,31 +41,51 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public String getActivateCode(String activateCode) {
         return redisDao.getByActivateCode(activateCode);
     }
 
     @Override
+    @Transactional
     public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getEmail()));
         return userDao.save(user);
     }
 
     @Override
+    @Transactional
     public Optional<User> findByEmail(String userEmail) {
         return userDao.getUserByEmail(userEmail);
     }
 
     @Override
+    @Transactional
     public Optional<User> login(String email, String password) {
-        return userDao.getUserByEmailAndPassword(email, passwordEncoder.encode(password));
+        Optional<User> userByEmail = userDao.getUserByEmail(email);
+        if (userByEmail.isPresent()) {
+            String encodePass = userByEmail.get().getPassword();
+            if (passwordEncoder.matches(password, encodePass)) {
+                return userByEmail;
+            } else return Optional.empty();
+        } else return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public Optional<User> activateUserByCode(String activateCode) {
+        String userEmail = redisDao.getByActivateCode(activateCode);
+        if (Objects.nonNull(userEmail)) {
+            return userDao.getUserByEmail(userEmail);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private void sendMessage(String activateCode, User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Hello, %s! \n" +
-                            "Welcome to GAMESHOP. Please, visit next link: http://%s/api/test?activateCode=%s",
+                            "Welcome to GAMESHOP. Please, visit next link: http://%s/registration?activateCode=%s",
                     user.getFirstName(),
                     "localhost:80/gameshop",
                     activateCode

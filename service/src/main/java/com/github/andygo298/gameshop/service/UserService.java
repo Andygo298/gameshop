@@ -8,6 +8,7 @@ public interface UserService {
     boolean saveActivateCode(User user);
     String getActivateCode(String activateCode);
     public User saveUser(User user);
+    Optional<User> activateUserByCode(String activateCode);
     Optional<User> findByEmail(String email);
     Optional<User> login(String email, String password);
 }

@@ -1,10 +1,12 @@
 package com.github.andygo298.gameshop.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +17,7 @@ import java.util.Set;
 @Table(name = "user")
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,7 @@ public class User {
     private String lastName;
     @Column(name = "password", nullable = false)
     @NonNull
+    @JsonIgnore
     private String password;
     @Column(name = "email", nullable = false, unique = true)
     @NonNull
@@ -37,6 +40,7 @@ public class User {
     private Integer mark;
     @Column(name = "created_at", nullable = false, updatable = false)
     @NonNull
+    @JsonIgnore
     private LocalDate createdAt;
     @Column(name = "role", nullable = false)
     @NonNull

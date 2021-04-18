@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
@@ -28,9 +30,14 @@ public class WebConfig {
 
     @Bean
     UserController userController() {
-        return new UserController(serviceConfig.userService());
+        return new UserController(serviceConfig.userService(),passwordEncoder());
     }
     //others:
+
+    @Bean
+    protected PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(8);
+    }
 
     @Bean
     @Description("Spring Message Resolver")
