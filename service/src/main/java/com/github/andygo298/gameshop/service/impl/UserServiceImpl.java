@@ -6,7 +6,6 @@ import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
 
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,8 +36,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public boolean saveActivateCode(User user) {
         String activateCode = UUID.randomUUID().toString();
-        sendMessage(activateCode, user);
+        activateCodeSendMessage(activateCode, user);
         return redisDao.saveActivateCode(activateCode, user.getEmail());
+    }
+
+    @Override
+    @Transactional
+    public boolean saveForgotPasswordCode(String email) {
+        String forgotPasswordCode = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999 + 1));
+        forgotPasswordSendMessage(forgotPasswordCode, email);
+        return redisDao.saveForgotPasswordCode(forgotPasswordCode, email);
     }
 
     @Override
@@ -48,8 +56,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public String getByForgotPasswordCode(String forgotPasswordCode) {
+        return redisDao.getByForgotPasswordCode(forgotPasswordCode);
+    }
+
+    @Override
+    @Transactional
     public User saveUser(User user) {
-        return userDao.save(user);
+        return userDao.saveAndFlush(user);
     }
 
     @Override
@@ -81,16 +95,25 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void sendMessage(String activateCode, User user) {
+
+    private void activateCodeSendMessage(String activateCode, User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Hello, %s! \n" +
-                            "Welcome to GAMESHOP. Please, visit next link: http://%s/registration?activateCode=%s",
+                            "Welcome to GAMESHOP.\nPlease, visit next link: http://%s/auth/confirm?activateCode=%s",
                     user.getFirstName(),
                     "localhost:80/gameshop",
                     activateCode
             );
             mailSenderService.send(user.getEmail(), "Activation code", message);
+        }
+    }
+
+    private void forgotPasswordSendMessage(String forgotPasswordCode, String email) {
+        if (!StringUtils.isEmpty(email)) {
+            String message = "Hello! \nYou told us you forgot your password.\n Your password reset code:"+ forgotPasswordCode
+                    +"\nThis code will be active for 1 hour";
+            mailSenderService.send(email, "Activation code", message);
         }
     }
 }

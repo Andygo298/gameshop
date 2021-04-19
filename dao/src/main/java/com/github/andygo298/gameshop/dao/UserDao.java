@@ -9,5 +9,4 @@ import java.util.Optional;
 
 public interface UserDao extends JpaRepository<User, Integer> {
     public Optional<User> getUserByEmail(String email);
-    public Optional<User> getUserByEmailAndPassword(String email, String password);
 }

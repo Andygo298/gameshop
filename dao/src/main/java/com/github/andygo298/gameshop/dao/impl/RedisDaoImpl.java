@@ -34,6 +34,7 @@ public class RedisDaoImpl implements RedisDao {
     public boolean saveForgotPasswordCode(String forgotPasswordCode, String userEmail) {
         try {
             redisTemplate.opsForHash().put(forgotPasswordCode, forgotPasswordCode, userEmail);
+            redisTemplate.expire(forgotPasswordCode, 1, TimeUnit.HOURS);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,4 +46,5 @@ public class RedisDaoImpl implements RedisDao {
     public String getByForgotPasswordCode(String forgotPasswordCode) {
         return (String) redisTemplate.opsForHash().get(forgotPasswordCode, forgotPasswordCode);
     }
+
 }
