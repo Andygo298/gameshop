@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 public class MailSenderServiceImpl implements MailSenderService {
 
-   private JavaMailSender javaMailSender;
+   private final JavaMailSender javaMailSender;
 
     public MailSenderServiceImpl(JavaMailSender mailSender) {
         this.javaMailSender = mailSender;

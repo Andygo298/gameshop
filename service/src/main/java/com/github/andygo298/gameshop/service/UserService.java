@@ -6,10 +6,10 @@ import java.util.Optional;
 
 public interface UserService {
     boolean saveActivateCode(User user);
-    public boolean saveForgotPasswordCode(String email);
+    boolean saveForgotPasswordCode(String email);
     String getActivateCode(String activateCode);
     String getByForgotPasswordCode(String forgotPasswordCode);
-    public User saveUser(User user);
+    User saveUser(User user);
     Optional<User> activateUserByCode(String activateCode);
     Optional<User> findByEmail(String email);
     Optional<User> login(String email, String password);

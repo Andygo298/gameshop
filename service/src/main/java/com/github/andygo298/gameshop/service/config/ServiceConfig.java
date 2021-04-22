@@ -2,8 +2,10 @@ package com.github.andygo298.gameshop.service.config;
 
 import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.dao.config.DaoConfig;
+import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
+import com.github.andygo298.gameshop.service.impl.CommentServiceImpl;
 import com.github.andygo298.gameshop.service.impl.MailSenderServiceImpl;
 import com.github.andygo298.gameshop.service.impl.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -27,17 +29,21 @@ public class ServiceConfig {
     }
 
     @Bean
-    public UserService userService(){
-        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService(),passwordEncoder());
+    public UserService userService() {
+        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService(), passwordEncoder());
+    }
+    @Bean
+    public CommentService commentService(){
+        return new CommentServiceImpl();
     }
 
     @Bean
-    protected PasswordEncoder passwordEncoder(){
+    protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(8);
     }
 
     @Bean
-    public MailSenderService mailSenderService(){
+    public MailSenderService mailSenderService() {
         return new MailSenderServiceImpl(getJavaMailSender());
     }
 

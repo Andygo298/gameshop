@@ -1,17 +1,15 @@
 package com.github.andygo298.gameshop.model.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "game")
-@Data
-@NoArgsConstructor
+@AllArgsConstructor
 public class Game {
 
     @Id
@@ -25,6 +23,11 @@ public class Game {
     @Column(name = "isDelete")
     private boolean isDelete;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "games", fetch = FetchType.EAGER )
-    private Set<User> users = new HashSet<>();
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<User> users;
 
+    public Game() {
+        this.users = new HashSet<>();
+    }
 }

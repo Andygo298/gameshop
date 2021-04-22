@@ -1,11 +1,13 @@
 package com.github.andygo298.gameshop.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.andygo298.gameshop.model.entity.jsonUtil.LocalDateDeserializer;
+import com.github.andygo298.gameshop.model.entity.jsonUtil.LocalDateSerializer;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @Entity
 @Table(name = "user")
 @AllArgsConstructor
@@ -38,11 +39,12 @@ public class User implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     @NonNull
     private String email;
-    @Column(name = "mark")
+    @Column(name = "mark",columnDefinition = "int default 0")
     private Integer mark;
     @Column(name = "created_at", nullable = false, updatable = false)
     @NonNull
-    @JsonIgnore
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate createdAt;
     @Column(name = "role", nullable = false)
     @NonNull
@@ -53,17 +55,27 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    @Fetch(FetchMode.SELECT)
-    private Set<Comment> comments = new HashSet<>();
-
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+//    @Fetch(FetchMode.SELECT)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    private Set<Comment> comments;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(name = "user_game",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "game_id")})
-    @Fetch(FetchMode.SELECT)
-    private Set<Game> games = new HashSet<>();
+//    @Fetch(FetchMode.SELECT)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    private Set<Game> games;
+
+    public User() {
+        this.comments = new HashSet<>();
+        this.games = new HashSet<>();
+    }
 
     @Builder(builderMethodName = "builder")
     public static User newUser(String firstName, String lastName, String password, String email, LocalDate createdAt, Role role, Status status) {

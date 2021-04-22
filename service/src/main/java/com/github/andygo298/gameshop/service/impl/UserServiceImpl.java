@@ -20,11 +20,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private RedisDao redisDao;
     @Autowired
     private UserDao userDao;
-    private MailSenderService mailSenderService;
-    private PasswordEncoder passwordEncoder;
+    private final RedisDao redisDao;
+    private final MailSenderService mailSenderService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(RedisDao redisDao, MailSenderService mailSenderService, PasswordEncoder passwordEncoder) {
         this.redisDao = redisDao;

@@ -100,11 +100,10 @@ public class UserController {
 
     @GetMapping("/auth/confirm")
     public ResponseEntity<User> registration(@RequestParam String activateCode) {
-        String userEmail = userService.getActivateCode(activateCode);
-        if (Objects.nonNull(userEmail)) {
-            Optional<User> userByEmail = userService.findByEmail(userEmail);
-            if (userByEmail.isPresent()) {
-                User user = userByEmail.get();
+        if (Objects.nonNull(activateCode)) {
+            Optional<User> activateUser = userService.activateUserByCode(activateCode);
+            if (activateUser.isPresent()) {
+                User user = activateUser.get();
                 user.setStatus(Status.ACTIVE);
                 userService.saveUser(user);
                 return new ResponseEntity<>(HttpStatus.OK);
