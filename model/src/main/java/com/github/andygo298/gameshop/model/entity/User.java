@@ -39,8 +39,6 @@ public class User implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     @NonNull
     private String email;
-    @Column(name = "mark",columnDefinition = "int default 0")
-    private Integer mark;
     @Column(name = "created_at", nullable = false, updatable = false)
     @NonNull
     @JsonDeserialize(using = LocalDateDeserializer.class)

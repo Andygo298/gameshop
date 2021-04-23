@@ -8,5 +8,8 @@ import java.util.Optional;
 public interface CommentService {
     Optional<List<Comment>> getCommentsByUserId(Integer userId);
     Optional<Comment> getCommentByUserIdAndCommentId(Integer userId, Integer commentId);
-    Optional<Comment> saveComment(Comment comment, Integer commentMark);
+    Optional<Comment> saveComment(Comment comment, int commentMark);
+    Optional<Comment> getCommentById(Integer commentId);
+    Comment updateComment(Comment commentToUpdate, int mark);
+    int getTotalRatingByUserId(Integer userId);
 }

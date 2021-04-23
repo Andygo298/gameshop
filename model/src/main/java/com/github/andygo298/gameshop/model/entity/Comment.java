@@ -10,14 +10,14 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
 @Table(name = "comment")
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class Comment implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,8 @@ public class Comment {
     private Integer commentId;
     @Column(name = "message", nullable = false)
     private String message;
+    @Column(name = "commentMark")
+    private int commentMark;
     @Column(name = "created_at", nullable = false, updatable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -45,6 +47,10 @@ public class Comment {
     @EqualsAndHashCode.Exclude
     private User user;
 
+    public Comment() {
+        this.commentMark = 0;
+    }
+
     public static class CommentBuilder {
 
         private Comment newComment;
@@ -57,19 +63,28 @@ public class Comment {
             newComment.message = message;
             return this;
         }
+
+        public Comment.CommentBuilder withCommentMark(int commentMark) {
+            newComment.commentMark = commentMark;
+            return this;
+        }
+
         public Comment.CommentBuilder withCreatedAt(LocalDate createdAt) {
             newComment.createdAt = createdAt;
             return this;
         }
+
         public Comment.CommentBuilder withUser(User user) {
             newComment.user = user;
             return this;
         }
+
         public Comment.CommentBuilder withUserId(Integer userId) {
             newComment.userId = userId;
             return this;
         }
-        public Comment build(){
+
+        public Comment build() {
             return newComment;
         }
     }

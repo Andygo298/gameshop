@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -55,5 +56,9 @@ public class TestCommentDaoImpl {
     void test2(){
         Optional<User> byId = userDao.findById(1);
         User user = byId.get();
+    }
+
+    @Test
+    void testGetRating(){
     }
 }

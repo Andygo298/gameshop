@@ -1,6 +1,5 @@
 package com.github.andygo298.gameshop.dao.config;
 
-
 import com.github.andygo298.gameshop.dao.RedisDao;
 import com.github.andygo298.gameshop.dao.impl.RedisDaoImpl;
 import org.hibernate.SessionFactory;

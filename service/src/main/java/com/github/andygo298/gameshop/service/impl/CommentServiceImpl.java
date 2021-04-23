@@ -34,17 +34,36 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Optional<Comment> saveComment(Comment comment, Integer commentMark){
+    public Optional<Comment> saveComment(Comment comment, int commentMark) {
         Optional<User> byId = userDao.findById(comment.getUserId());
-        if (byId.isPresent()){
+        if (byId.isPresent()) {
             User user = byId.get();
-            Integer newMark = user.getMark() + commentMark;
-//            user.setMark(newMark);
             comment.setUser(user);
-            return Optional.of(commentDao.save(comment)) ;
-        }else{
+            return Optional.of(commentDao.save(comment));
+        } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    @Transactional
+    public Optional<Comment> getCommentById(Integer commentId) {
+        return commentDao.findById(commentId);
+    }
+
+    @Override
+    @Transactional
+    public Comment updateComment(Comment commentToUpdate, int mark) {
+//        int oldUserMark = commentToUpdate.getUser().getMark();
+//        int currentUserMark =
+//        commentToUpdate.getUser().setMark(currentUserMark);
+        return commentDao.save(commentToUpdate);
+    }
+
+    @Override
+    @Transactional
+    public int getTotalRatingByUserId(Integer userId) {
+        return commentDao.getTotalRatingByUserId(userId);
     }
 
 }
