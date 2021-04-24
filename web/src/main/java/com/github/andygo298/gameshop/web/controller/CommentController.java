@@ -1,16 +1,23 @@
 package com.github.andygo298.gameshop.web.controller;
 
 import com.github.andygo298.gameshop.model.entity.Comment;
+import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.UserService;
 import com.github.andygo298.gameshop.web.request.CommentRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -58,12 +65,31 @@ public class CommentController {
     }
 
     @PutMapping("/articles/{id}/comments")
-    public ResponseEntity<Comment> updateCommentById(@PathVariable("id")Integer commentId, @RequestBody CommentRequest commentRequest){
+    public ResponseEntity<Comment> updateCommentById(@PathVariable("id") Integer commentId, @RequestBody CommentRequest commentRequest) {
         Optional<Comment> commentById = commentService.getCommentById(commentId);
         Comment commentToUpdate = commentById.orElseThrow(userOrCommentsNotFound);
         commentToUpdate.setMessage(commentRequest.getMessage());
         Comment updateComment = commentService.updateComment(commentToUpdate, commentRequest.getMark());
         return ResponseEntity.ok(updateComment);
+    }
+
+    @DeleteMapping("/users/{id}/comments/{id}")
+    public ResponseEntity<Comment> deleteComment(Authentication authentication, @PathVariable("id") Integer userId, @PathVariable("id") Integer commentId) {
+        if (Objects.nonNull(authentication)){
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+            String authName = authentication.getName();
+            Optional<User> byAuthEmail = userService.findByEmail(authName);
+            if (isAdmin || byAuthEmail.isPresent()) {
+                User currentUser = byAuthEmail.orElseThrow(userOrCommentsNotFound);
+                if (currentUser.getUserId().equals(userId) || isAdmin){
+                    return ResponseEntity.ok(commentService.deleteCommentById(commentId));
+                }
+            }
+            throw userOrCommentsNotFound.get();
+        }else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,14 @@ public class CommentServiceImpl implements CommentService {
 //        int currentUserMark =
 //        commentToUpdate.getUser().setMark(currentUserMark);
         return commentDao.save(commentToUpdate);
+    }
+
+    @Override
+    @Transactional
+    public Comment deleteCommentById(Integer commentId) {
+        Comment byId = commentDao.findById(commentId).orElseThrow(() -> new EntityNotFoundException("commentId not Found"));
+        byId.setDelete(true);
+        return commentDao.save(byId);
     }
 
     @Override

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.andygo298.gameshop.model.entity.jsonUtil.LocalDateDeserializer;
 import com.github.andygo298.gameshop.model.entity.jsonUtil.LocalDateSerializer;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 @Table(name = "comment")
 @Entity
 @AllArgsConstructor
+@Where(clause="isDelete=false")
 public class Comment implements Serializable {
 
     @Id

@@ -71,7 +71,7 @@ public class UserController {
         Optional<User> optionalUserByLogin = userService.login(loginRq.getEmail(), loginRq.getPassword());
         if (optionalUserByLogin.isPresent()) {
             User user = optionalUserByLogin.get();
-            Authentication auth = new UsernamePasswordAuthenticationToken(user, null, getAuthorities(user));
+            Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), getAuthorities(user));
             SecurityContextHolder.getContext().setAuthentication(auth);
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } else throw unauthorizedError.get();
@@ -146,10 +146,6 @@ public class UserController {
         }
     }
 
-    private List<GrantedAuthority> getAuthorities(User user) {
-        return Collections.singletonList((GrantedAuthority) () -> "ROLE_" + user.getRole().name());
-    }
-
     @GetMapping("/auth/logout")
     public ResponseEntity<?> doGet(HttpServletRequest rq) {
         SecurityContextHolder.clearContext();
@@ -159,5 +155,9 @@ public class UserController {
             new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.RESET_CONTENT);
+    }
+
+    private List<GrantedAuthority> getAuthorities(User user) {
+        return Collections.singletonList((GrantedAuthority) () -> "ROLE_" + user.getRole().name());
     }
 }

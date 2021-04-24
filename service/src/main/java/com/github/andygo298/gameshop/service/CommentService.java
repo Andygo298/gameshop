@@ -12,4 +12,5 @@ public interface CommentService {
     Optional<Comment> getCommentById(Integer commentId);
     Comment updateComment(Comment commentToUpdate, int mark);
     int getTotalRatingByUserId(Integer userId);
+    Comment deleteCommentById(Integer commentId);
 }
