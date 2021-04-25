@@ -8,6 +8,7 @@ import com.github.andygo298.gameshop.service.UserService;
 import com.github.andygo298.gameshop.service.impl.CommentServiceImpl;
 import com.github.andygo298.gameshop.service.impl.MailSenderServiceImpl;
 import com.github.andygo298.gameshop.service.impl.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -21,6 +22,15 @@ import java.util.Properties;
 @Configuration
 @PropertySource("classpath:mail.properties")
 public class ServiceConfig {
+
+    @Value("${spring.mail.host}")
+    private String host;
+    @Value("${spring.mail.port}")
+    private int port;
+    @Value("${spring.mail.username}")
+    private String userName;
+    @Value("${spring.mail.password}")
+    private String password;
 
     private DaoConfig daoConfig;
 
@@ -50,10 +60,15 @@ public class ServiceConfig {
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
+   /*     mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername("andygo298@gmail.com");
-        mailSender.setPassword("xxxl_298");
+        mailSender.setPassword("xxxl_298");*/
+
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(userName);
+        mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

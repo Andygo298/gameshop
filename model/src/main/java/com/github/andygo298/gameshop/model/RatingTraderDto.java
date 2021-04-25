@@ -1,16 +1,25 @@
 package com.github.andygo298.gameshop.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
+import java.io.Serializable;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class RatingTraderDto {
+public class RatingTraderDto implements Serializable {
     private String email;
     private String firstName;
-    private long TraderRating;
+    private Long traderRating;
+
+    public RatingTraderDto(String email, String firstName, Long traderRating) {
+        this.email = email;
+        this.firstName = firstName;
+        if (Objects.nonNull(traderRating)){
+            this.traderRating = traderRating;
+        }else {
+            this.traderRating = 0L;
+        }
+    }
 }
