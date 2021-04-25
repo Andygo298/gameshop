@@ -1,23 +1,20 @@
 package com.github.andygo298.gameshop.web.controller;
 
+import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
 import com.github.andygo298.gameshop.model.entity.User;
-import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.UserService;
 import com.github.andygo298.gameshop.web.request.CommentRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -43,13 +40,39 @@ public class CommentController {
 
     @PostMapping("/articles/{id}/comments")
     public ResponseEntity<Comment> saveComment(@PathVariable("id") Integer userId, @RequestBody CommentRequest commentRequest) {
-        Comment commentToSave = new Comment.CommentBuilder().withMessage(commentRequest.getMessage())
+        Comment commentToSave = new Comment.CommentBuilder()
+                .withMessage(commentRequest.getMessage())
                 .withUserId(userId)
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
+                .withCommentMark(commentRequest.getMark())
                 .build();
-
-        Optional<Comment> commentFromDb = commentService.saveComment(commentToSave, commentRequest.getMark());
+        Optional<Comment> commentFromDb = commentService.saveComment(commentToSave);
         return ResponseEntity.ok(commentFromDb.orElseThrow(userNotFound));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/articles/{id}/approveComments")
+    public ResponseEntity<Comment> approveComment(@PathVariable("id") Integer commentId){
+        Optional<Comment> commentById = commentService.getCommentById(commentId);
+        Comment comment = commentById.orElseThrow(userOrCommentsNotFound);
+        comment.setApproved(true);
+        return ResponseEntity.ok(commentService.updateComment(comment));
+    }
+
+    @PutMapping("/articles/{id}/comments")
+    public ResponseEntity<Comment> updateCommentById(@PathVariable("id") Integer commentId, @RequestBody CommentRequest commentRequest) {
+        Optional<Comment> commentById = commentService.getCommentById(commentId);
+        Comment commentToUpdate = commentById.orElseThrow(userOrCommentsNotFound);
+        commentToUpdate.setMessage(commentRequest.getMessage());
+        commentToUpdate.setCommentMark(commentRequest.getMark());
+        commentToUpdate.setUpdatedAt(LocalDateTime.now().toLocalDate());
+        Comment updateComment = commentService.updateComment(commentToUpdate);
+        return ResponseEntity.ok(updateComment);
+    }
+
+    @GetMapping("/users/rating")
+    public ResponseEntity<List<RatingTraderDto>> getTraderRating(){
+        return ResponseEntity.ok(commentService.getTradersRating());
     }
 
     @GetMapping("/users/{id}/comments")
@@ -64,18 +87,8 @@ public class CommentController {
         return ResponseEntity.ok(commentByUserIdAndCommentId.orElseThrow(userOrCommentsNotFound));
     }
 
-    @PutMapping("/articles/{id}/comments")
-    public ResponseEntity<Comment> updateCommentById(@PathVariable("id") Integer commentId, @RequestBody CommentRequest commentRequest) {
-        Optional<Comment> commentById = commentService.getCommentById(commentId);
-        Comment commentToUpdate = commentById.orElseThrow(userOrCommentsNotFound);
-        commentToUpdate.setMessage(commentRequest.getMessage());
-        Comment updateComment = commentService.updateComment(commentToUpdate, commentRequest.getMark());
-        return ResponseEntity.ok(updateComment);
-    }
-
     @DeleteMapping("/users/{id}/comments/{id}")
     public ResponseEntity<Comment> deleteComment(Authentication authentication, @PathVariable("id") Integer userId, @PathVariable("id") Integer commentId) {
-        if (Objects.nonNull(authentication)){
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
             String authName = authentication.getName();
@@ -87,9 +100,5 @@ public class CommentController {
                 }
             }
             throw userOrCommentsNotFound.get();
-        }else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
     }
-
 }

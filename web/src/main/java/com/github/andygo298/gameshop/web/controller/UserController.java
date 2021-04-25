@@ -1,6 +1,5 @@
 package com.github.andygo298.gameshop.web.controller;
 
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
@@ -9,7 +8,6 @@ import com.github.andygo298.gameshop.web.request.ForgotPasswordRequest;
 import com.github.andygo298.gameshop.web.request.LoginRequest;
 import com.github.andygo298.gameshop.web.request.RegistrationRequest;
 import com.github.andygo298.gameshop.web.request.ResetPasswordRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -57,8 +54,8 @@ public class UserController {
         throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists - " + email);
     };
 
-    Function<String, ResponseStatusException> notFoundUser = (email) -> {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user available with the email - " + email);
+    Supplier<ResponseStatusException> notFoundUser = () -> {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user available with this email.");
     };
 
     @GetMapping
@@ -68,18 +65,21 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody LoginRequest loginRq) {
-        Optional<User> optionalUserByLogin = userService.login(loginRq.getEmail(), loginRq.getPassword());
-        if (optionalUserByLogin.isPresent()) {
-            User user = optionalUserByLogin.get();
-            Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), getAuthorities(user));
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
-        } else throw unauthorizedError.get();
+        User user = userService.login(loginRq.getEmail(), loginRq.getPassword())
+                .orElseThrow(unauthorizedError);
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                user.getEmail(), passwordEncoder.encode(user.getPassword()), getAuthorities(user)
+        );
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @PostMapping("/registration")
     public ResponseEntity<User> registration(@RequestBody RegistrationRequest registrationRequest) {
-        Optional<User> byEmail = userService.findByEmail(registrationRequest.getEmail());
+        String registrationEmail = registrationRequest.getEmail();
+        if (userService.findByEmail(registrationEmail).isPresent()) {
+            throw userExists.apply(registrationEmail);
+        }
         User userToSave = User.builder()
                 .firstName(registrationRequest.getFirstName())
                 .lastName(registrationRequest.getLastName())
@@ -89,48 +89,43 @@ public class UserController {
                 .status(Status.BANNED)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        if (byEmail.isPresent()) {
-            throw userExists.apply(byEmail.get().getEmail());
-        } else {
-            userService.saveActivateCode(userToSave);
+        if(userService.saveActivateCode(userToSave)){
             User user = userService.saveUser(userToSave);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        }else {
+         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Save activate code error");
         }
     }
 
     @GetMapping("/auth/confirm")
-    public ResponseEntity<User> registration(@RequestParam String activateCode) {
+    public ResponseEntity<String> registration(@RequestParam String activateCode) {
         if (Objects.nonNull(activateCode)) {
-            Optional<User> activateUser = userService.activateUserByCode(activateCode);
-            if (activateUser.isPresent()) {
-                User user = activateUser.get();
-                user.setStatus(Status.ACTIVE);
-                userService.saveUser(user);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            throw activateCodeError.get();
+            User user = userService.activateUserByCode(activateCode)
+                    .orElseThrow(activateCodeError);
+            user.setStatus(Status.ACTIVE);
+            userService.saveUser(user);
+            return ResponseEntity.ok("User - " + user.getEmail() + " is activated.");
         }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/auth/forgot_password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        userService.saveForgotPasswordCode(forgotPasswordRequest.getEmail());
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (userService.saveForgotPasswordCode(forgotPasswordRequest.getEmail())){
+            return ResponseEntity.ok("Email was sent to " + forgotPasswordRequest.getEmail());
+        }else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Save forgot-code error");
+        }
     }
 
     @PostMapping("/auth/reset")
     public ResponseEntity<User> resetUserPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         String userEmail = userService.getByForgotPasswordCode(resetPasswordRequest.getUserCode());
         if (Objects.nonNull(userEmail)) {
-            Optional<User> user = userService.findByEmail(userEmail);
-            if (user.isPresent()) {
-                User userFromDb = user.get();
-                userFromDb.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
-                userService.saveUser(userFromDb);
-                return new ResponseEntity<>(userFromDb, HttpStatus.OK);
-            } else throw notFoundUser.apply(userEmail);
+            User userToSave = userService.findByEmail(userEmail)
+                    .orElseThrow(notFoundUser);
+            userToSave.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
+            return ResponseEntity.ok(userService.saveUser(userToSave));
         } else {
             throw forgotPasswordCodeError.get();
         }
@@ -140,14 +135,14 @@ public class UserController {
     public ResponseEntity<String> checkCode(@RequestParam String userCode) {
         String emailByCode = userService.getByForgotPasswordCode(userCode);
         if (Objects.nonNull(emailByCode)) {
-            return new ResponseEntity<>(userCode, HttpStatus.OK);
+            return ResponseEntity.ok(userCode);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/auth/logout")
-    public ResponseEntity<?> doGet(HttpServletRequest rq) {
+    public ResponseEntity<String> doGet(HttpServletRequest rq) {
         SecurityContextHolder.clearContext();
         try {
             rq.logout();

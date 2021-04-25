@@ -41,6 +41,7 @@ public class Comment implements Serializable {
     @Column(name = "isApproved")
     private boolean isApproved;
     @Column(name = "isDelete")
+    @JsonIgnore
     private boolean isDelete;
     @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
     private Integer userId;

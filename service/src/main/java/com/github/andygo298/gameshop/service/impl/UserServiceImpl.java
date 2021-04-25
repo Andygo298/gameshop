@@ -2,6 +2,7 @@ package com.github.andygo298.gameshop.service.impl;
 
 import com.github.andygo298.gameshop.dao.RedisDao;
 import com.github.andygo298.gameshop.dao.UserDao;
+import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,11 +50,11 @@ public class UserServiceImpl implements UserService {
         return redisDao.saveForgotPasswordCode(forgotPasswordCode, email);
     }
 
-    @Override
-    @Transactional
-    public String getActivateCode(String activateCode) {
-        return redisDao.getByActivateCode(activateCode);
-    }
+//    @Override
+//    @Transactional
+//    public String getActivateCode(String activateCode) {
+//        return redisDao.getByActivateCode(activateCode);
+//    }
 
     @Override
     @Transactional
@@ -94,6 +96,7 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
     }
+
 
 
     private void activateCodeSendMessage(String activateCode, User user) {

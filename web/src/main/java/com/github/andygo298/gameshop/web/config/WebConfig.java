@@ -1,10 +1,7 @@
 package com.github.andygo298.gameshop.web.config;
 
-import com.github.andygo298.gameshop.model.entity.User;
-import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.config.ServiceConfig;
 import com.github.andygo298.gameshop.web.controller.CommentController;
-import com.github.andygo298.gameshop.web.controller.TestController;
 import com.github.andygo298.gameshop.web.controller.UserController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,11 +22,6 @@ public class WebConfig {
     }
 
     //controllers:
-    @Bean
-    TestController testController() {
-        return new TestController(serviceConfig.userService());
-    }
-
     @Bean
     UserController userController() {
         return new UserController(serviceConfig.userService(), passwordEncoder());

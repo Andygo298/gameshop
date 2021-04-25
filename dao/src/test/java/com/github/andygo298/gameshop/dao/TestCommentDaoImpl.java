@@ -1,6 +1,7 @@
 package com.github.andygo298.gameshop.dao;
 
 import com.github.andygo298.gameshop.dao.config.DaoConfig;
+import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.model.enums.Role;
@@ -60,5 +61,6 @@ public class TestCommentDaoImpl {
 
     @Test
     void testGetRating(){
+        List<RatingTraderDto> rating = commentDao.getTradersRating();
     }
 }
