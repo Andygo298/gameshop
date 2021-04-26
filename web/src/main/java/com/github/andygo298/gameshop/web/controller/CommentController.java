@@ -101,7 +101,8 @@ public class CommentController {
 
 
     @DeleteMapping("/users/{id}/comments/{id}")
-    public ResponseEntity<Comment> deleteComment(Authentication authentication, @PathVariable("id") Integer userId, @PathVariable("id") Integer commentId) {
+    public ResponseEntity<Comment> deleteComment(Authentication authentication,
+                                                 @PathVariable("id") Integer userId, @PathVariable("id") Integer commentId) {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         String currentUserEmail = ((User) authentication.getPrincipal()).getEmail();

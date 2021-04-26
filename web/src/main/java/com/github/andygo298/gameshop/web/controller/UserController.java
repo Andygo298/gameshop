@@ -99,7 +99,8 @@ public class UserController {
             log.info("User - {} was created at : {}", user.getEmail(), LocalDateTime.now().toLocalDate());
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } else {
-            log.error("User - {} was created at : {}.\nReason: {}", userToSave.getEmail(), LocalDateTime.now().toLocalDate(), "Save activate code error");
+            log.error("User - {} was created at : {}.\nReason: {}", userToSave.getEmail(),
+                    LocalDateTime.now().toLocalDate(), "Save activate code error");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Save activate code error");
         }
     }
