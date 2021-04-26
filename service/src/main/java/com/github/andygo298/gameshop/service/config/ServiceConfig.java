@@ -1,11 +1,12 @@
 package com.github.andygo298.gameshop.service.config;
 
-import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.dao.config.DaoConfig;
 import com.github.andygo298.gameshop.service.CommentService;
+import com.github.andygo298.gameshop.service.GameService;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
 import com.github.andygo298.gameshop.service.impl.CommentServiceImpl;
+import com.github.andygo298.gameshop.service.impl.GameServiceImpl;
 import com.github.andygo298.gameshop.service.impl.MailSenderServiceImpl;
 import com.github.andygo298.gameshop.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,10 @@ public class ServiceConfig {
     public CommentService commentService(){
         return new CommentServiceImpl();
     }
+    @Bean
+    public GameService gameService(){
+        return new GameServiceImpl();
+    }
 
     @Bean
     protected PasswordEncoder passwordEncoder() {
@@ -60,11 +65,6 @@ public class ServiceConfig {
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-   /*     mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-        mailSender.setUsername("andygo298@gmail.com");
-        mailSender.setPassword("xxxl_298");*/
-
         mailSender.setHost(host);
         mailSender.setPort(port);
         mailSender.setUsername(userName);

@@ -1,7 +1,9 @@
 package com.github.andygo298.gameshop.web.config;
 
+import com.github.andygo298.gameshop.model.entity.Game;
 import com.github.andygo298.gameshop.service.config.ServiceConfig;
 import com.github.andygo298.gameshop.web.controller.CommentController;
+import com.github.andygo298.gameshop.web.controller.GameController;
 import com.github.andygo298.gameshop.web.controller.UserController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,11 @@ public class WebConfig {
     @Bean
     public CommentController commentController() {
         return new CommentController(serviceConfig.commentService(), serviceConfig.userService());
+    }
+
+    @Bean
+    public GameController gameController() {
+        return new GameController(serviceConfig.gameService(), serviceConfig.userService());
     }
     //others:
 

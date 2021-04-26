@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Table(name = "comment")
 @Entity
 @AllArgsConstructor
-@Where(clause="isDelete=false")
+@Where(clause="isDelete=false and isApproved=true")
 public class Comment implements Serializable {
 
     @Id

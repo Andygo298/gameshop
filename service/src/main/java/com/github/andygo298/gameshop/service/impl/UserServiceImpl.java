@@ -4,6 +4,7 @@ import com.github.andygo298.gameshop.dao.RedisDao;
 import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
 
@@ -110,6 +111,16 @@ public class UserServiceImpl implements UserService {
             );
             mailSenderService.send(user.getEmail(), "Activation code", message);
         }
+    }
+
+    @Override
+    public Optional<List<User>> findAllByRole(Role role) {
+        return userDao.findAllByRole(role);
+    }
+
+    @Override
+    public Optional<User> getUserById(Integer userId) {
+        return userDao.findById(userId);
     }
 
     private void forgotPasswordSendMessage(String forgotPasswordCode, String email) {

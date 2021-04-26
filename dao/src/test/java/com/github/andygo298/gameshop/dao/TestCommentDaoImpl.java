@@ -3,6 +3,7 @@ package com.github.andygo298.gameshop.dao;
 import com.github.andygo298.gameshop.dao.config.DaoConfig;
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
+import com.github.andygo298.gameshop.model.entity.Game;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
@@ -29,6 +30,8 @@ public class TestCommentDaoImpl {
     private CommentDao commentDao;
     @Autowired
     private SessionFactory sessionFactory;
+    @Autowired
+    private GameDao gameDao;
 
     @Test
     void test(){
@@ -62,5 +65,19 @@ public class TestCommentDaoImpl {
     @Test
     void testGetRating(){
         List<RatingTraderDto> rating = commentDao.getTradersRating();
+    }
+    @Test
+    void testGame(){
+        Optional<User> byId = userDao.findById(3);
+        User user = byId.get();
+        Game game = new Game();
+        game.setGameName("testgame");
+        game.setTitle("title game test");
+        game.setPrice(250);
+        game.setDelete(false);
+        game.getUsers().add(user);
+        Game save = gameDao.save(game);
+        user.getGames().add(save);
+        userDao.save(user);
     }
 }
