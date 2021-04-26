@@ -2,7 +2,9 @@ package com.github.andygo298.gameshop.service.impl;
 
 import com.github.andygo298.gameshop.dao.RedisDao;
 import com.github.andygo298.gameshop.dao.UserDao;
+import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
 
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,11 +23,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private RedisDao redisDao;
     @Autowired
     private UserDao userDao;
-    private MailSenderService mailSenderService;
-    private PasswordEncoder passwordEncoder;
+    private final RedisDao redisDao;
+    private final MailSenderService mailSenderService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(RedisDao redisDao, MailSenderService mailSenderService, PasswordEncoder passwordEncoder) {
         this.redisDao = redisDao;
@@ -48,11 +51,11 @@ public class UserServiceImpl implements UserService {
         return redisDao.saveForgotPasswordCode(forgotPasswordCode, email);
     }
 
-    @Override
-    @Transactional
-    public String getActivateCode(String activateCode) {
-        return redisDao.getByActivateCode(activateCode);
-    }
+//    @Override
+//    @Transactional
+//    public String getActivateCode(String activateCode) {
+//        return redisDao.getByActivateCode(activateCode);
+//    }
 
     @Override
     @Transactional
@@ -96,6 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
     private void activateCodeSendMessage(String activateCode, User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
@@ -107,6 +111,16 @@ public class UserServiceImpl implements UserService {
             );
             mailSenderService.send(user.getEmail(), "Activation code", message);
         }
+    }
+
+    @Override
+    public Optional<List<User>> findAllByRole(Role role) {
+        return userDao.findAllByRole(role);
+    }
+
+    @Override
+    public Optional<User> getUserById(Integer userId) {
+        return userDao.findById(userId);
     }
 
     private void forgotPasswordSendMessage(String forgotPasswordCode, String email) {
