@@ -17,16 +17,18 @@
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <log4j-core.version>2.13.3</log4j-core.version>
         <log4j-slf4j-impl.version>2.13.3</log4j-slf4j-impl.version>
-        <junit.jupiter.version>5.3.1</junit.jupiter.version>
+        <junit.jupiter.version>5.7.0</junit.jupiter.version>
         <assertj-core.version>3.14.0</assertj-core.version>
-        <mockito-core.version>3.1.0</mockito-core.version>
-        <mockito-junit-jupiter.version>3.1.0</mockito-junit-jupiter.version>
+        <mockito-core.version>3.8.0</mockito-core.version>
+        <mockito-junit-jupiter.version>3.8.0</mockito-junit-jupiter.version>
         <spring-webmvc.version>5.2.1.RELEASE</spring-webmvc.version>
         <spring-test.version>5.2.1.RELEASE</spring-test.version>
         <spring-security-config.version>5.2.1.RELEASE</spring-security-config.version>

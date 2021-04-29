@@ -6,10 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestBcryptBean {
+public class BCryptBeanTest {
 
     @Test
-    void testBcrypt() {
+    void bCryptTest() {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(8);
         final String testPass = "2481066";
         String encodePass = passwordEncoder.encode(testPass);

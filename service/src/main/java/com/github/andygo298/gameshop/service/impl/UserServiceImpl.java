@@ -8,6 +8,8 @@ import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final RedisDao redisDao;
     private final MailSenderService mailSenderService;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(RedisDao redisDao, MailSenderService mailSenderService, PasswordEncoder passwordEncoder) {
         this.redisDao = redisDao;
@@ -51,12 +54,6 @@ public class UserServiceImpl implements UserService {
         return redisDao.saveForgotPasswordCode(forgotPasswordCode, email);
     }
 
-//    @Override
-//    @Transactional
-//    public String getActivateCode(String activateCode) {
-//        return redisDao.getByActivateCode(activateCode);
-//    }
-
     @Override
     @Transactional
     public String getByForgotPasswordCode(String forgotPasswordCode) {
@@ -66,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User saveUser(User user) {
-        return userDao.saveAndFlush(user);
+        return userDao.save(user);
     }
 
     @Override
@@ -114,11 +111,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Optional<List<User>> findAllByRole(Role role) {
         return userDao.findAllByRole(role);
     }
 
     @Override
+    @Transactional
     public Optional<User> getUserById(Integer userId) {
         return userDao.findById(userId);
     }
