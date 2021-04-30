@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface CommentService {
     Optional<List<Comment>> getCommentsByUserId(Integer userId);
     Optional<Comment> getCommentByUserIdAndCommentId(Integer userId, Integer commentId);
-    Optional<Comment> saveComment(Comment comment);
+    Comment saveComment(Comment comment);
     Optional<Comment> getCommentById(Integer commentId);
     Comment updateComment(Comment commentToUpdate);
     int getTotalRatingByUserId(Integer userId);

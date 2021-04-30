@@ -11,7 +11,7 @@ public interface GameService {
     Game updateGame(Game gameToUpdate);
     Optional<Game> getGameById(Integer gameId);
     void addGameToTrader(User user, Game game);
-    Optional<List<Game>> getAllGamesByUserId(Integer userId);
+    List<Game> getAllGamesByUserId(Integer userId);
     List<Game> getAllGames();
     Game deleteGame(Integer gameId);
     void removeGameFromTrader(User user, Game game);
