@@ -25,11 +25,11 @@ public class GameController {
 
     private Supplier<ResponseStatusException> gameNotFound = () -> {
         log.error("Game id is invalid or game not found");
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Game id is invalid or game not found");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game id is invalid or game not found");
     };
     private Supplier<ResponseStatusException> userNotFound = () -> {
         log.error("User id is invalid or user not found");
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User id is invalid or user not found");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id is invalid or user not found");
     };
 
     public GameController(GameService gameService, UserService userService) {
@@ -45,8 +45,7 @@ public class GameController {
 
     @GetMapping("/users/{id}/games")
     public ResponseEntity<List<Game>> getUserAllGames(@PathVariable("id") Integer userId) {
-        List<Game> games = gameService.getAllGamesByUserId(userId)
-                .orElseThrow(gameNotFound);
+        List<Game> games = gameService.getAllGamesByUserId(userId);
         return ResponseEntity.ok(games);
     }
 

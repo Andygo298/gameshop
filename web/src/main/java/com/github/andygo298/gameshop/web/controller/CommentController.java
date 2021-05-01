@@ -35,11 +35,11 @@ public class CommentController {
 
     private Supplier<ResponseStatusException> userNotFound = () -> {
         log.error("User id is invalid or user not found");
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User id is invalid or user not found");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id is invalid or user not found");
     };
     private Supplier<ResponseStatusException> userOrCommentsNotFound = () -> {
         log.error("User or(and) comment is invalid or not found");
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User or(and) comment is invalid or not found");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User or(and) comment is invalid or not found");
     };
 
     @PostMapping("/articles/{id}/comments")
@@ -50,9 +50,9 @@ public class CommentController {
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(commentRequest.getMark())
                 .build();
-        Optional<Comment> commentFromDb = commentService.saveComment(commentToSave);
+        Comment commentFromDb = commentService.saveComment(commentToSave);
         log.info("Comment with userId - {} was saved.", userId);
-        return ResponseEntity.ok(commentFromDb.orElseThrow(userNotFound));
+        return ResponseEntity.ok(commentFromDb);
     }
 
     @GetMapping("/admin/articles/{id}/approveComments")

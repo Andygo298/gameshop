@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentDao extends JpaRepository<Comment, Integer> {
+
     Optional<List<Comment>> getCommentsByUserId(Integer userId);
 
     Optional<Comment> getCommentByUserIdAndCommentId(Integer userId, Integer commentId);
 
-    @Query("select sum(c.commentMark) from Comment c where c.userId=:userId")
+    @Query("select sum(c.commentMark) from Comment c where c.userId=?1")
     int getTotalRatingByUserId(Integer userId);
 
     @Query(value = "select new com.github.andygo298.gameshop.model.RatingTraderDto(u.email,u.firstName,sum(c.commentMark)) " +

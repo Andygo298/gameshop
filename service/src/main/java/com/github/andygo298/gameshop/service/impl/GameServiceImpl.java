@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -50,8 +52,14 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public Optional<List<Game>> getAllGamesByUserId(Integer userId) {
-        return Optional.empty();
+    public List<Game> getAllGamesByUserId(Integer userId) {
+        Optional<User> userById = userDao.findById(userId);
+        if (userById.isPresent()){
+            return new ArrayList<>(userById.get().getGames());
+        }else {
+            throw new EntityNotFoundException("user not found");
+        }
+
     }
 
     @Override

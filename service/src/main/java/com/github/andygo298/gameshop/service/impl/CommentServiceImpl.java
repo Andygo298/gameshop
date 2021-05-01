@@ -36,11 +36,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Optional<Comment> saveComment(Comment comment) {
+    public Comment saveComment(Comment comment) {
         User userById = userDao.findById(comment.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not Found"));
         comment.setUser(userById);
-        return Optional.of(commentDao.save(comment));
+        return commentDao.save(comment);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public Comment deleteCommentById(Integer commentId) {
         Comment byId = commentDao.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("commentId not Found"));
+                .orElseThrow(() -> new EntityNotFoundException("Comment not Found"));
         byId.setDelete(true);
         return commentDao.save(byId);
     }

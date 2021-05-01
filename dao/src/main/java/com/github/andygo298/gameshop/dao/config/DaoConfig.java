@@ -14,6 +14,8 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManager;
+
 @Configuration
 @Import(HibernateConfig.class)
 @EnableTransactionManagement
@@ -22,10 +24,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 })
 public class DaoConfig {
 
-    private final SessionFactory sessionFactory;
+    private final EntityManager entityManager;
 
-    public DaoConfig(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public DaoConfig(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     //beans dao: ...

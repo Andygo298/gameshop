@@ -1,6 +1,5 @@
 package com.github.andygo298.gameshop.service;
 
-import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.model.enums.Role;
 

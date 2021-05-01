@@ -43,12 +43,14 @@ public class ServiceConfig {
     public UserService userService() {
         return new UserServiceImpl(daoConfig.redisDao(), mailSenderService(), passwordEncoder());
     }
+
     @Bean
-    public CommentService commentService(){
+    public CommentService commentService() {
         return new CommentServiceImpl();
     }
+
     @Bean
-    public GameService gameService(){
+    public GameService gameService() {
         return new GameServiceImpl();
     }
 
