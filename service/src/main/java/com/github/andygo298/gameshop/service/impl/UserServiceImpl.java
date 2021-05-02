@@ -80,8 +80,14 @@ public class UserServiceImpl implements UserService {
             String encodePass = userByEmail.get().getPassword();
             if (passwordEncoder.matches(password, encodePass)) {
                 return userByEmail;
-            } else return Optional.empty();
-        } else return Optional.empty();
+            } else {
+                log.warn("User password {} is invalid.", password);
+                return Optional.empty();
+            }
+        } else {
+            log.warn("User login: {} is invalid or not found.", email);
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -92,21 +98,6 @@ public class UserServiceImpl implements UserService {
             return userDao.getUserByEmail(userEmail);
         } else {
             return Optional.empty();
-        }
-    }
-
-
-
-    private void activateCodeSendMessage(String activateCode, User user) {
-        if (!StringUtils.isEmpty(user.getEmail())) {
-            String message = String.format(
-                    "Hello, %s! \n" +
-                            "Welcome to GAMESHOP.\nPlease, visit next link: http://%s/auth/confirm?activateCode=%s",
-                    user.getFirstName(),
-                    "localhost:80/gameshop",
-                    activateCode
-            );
-            mailSenderService.send(user.getEmail(), "Activation code", message);
         }
     }
 
@@ -122,11 +113,26 @@ public class UserServiceImpl implements UserService {
         return userDao.findById(userId);
     }
 
+    private void activateCodeSendMessage(String activateCode, User user) {
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(
+                    "Hello, %s! \n" +
+                            "Welcome to GAMESHOP.\nPlease, visit next link: http://%s/auth/confirm?activateCode=%s",
+                    user.getFirstName(),
+                    "localhost:80/gameshop",
+                    activateCode
+            );
+            mailSenderService.send(user.getEmail(), "Activation code", message);
+            log.info("Email with activateCode: {} was sent to: {}.", activateCode, user.getEmail());
+        }
+    }
+
     private void forgotPasswordSendMessage(String forgotPasswordCode, String email) {
         if (!StringUtils.isEmpty(email)) {
-            String message = "Hello! \nYou told us you forgot your password.\n Your password reset code:"+ forgotPasswordCode
-                    +"\nThis code will be active for 1 hour";
-            mailSenderService.send(email, "Activation code", message);
+            String message = "Hello! \nYou told us you forgot your password.\n Your password reset code:" + forgotPasswordCode
+                    + "\nThis code will be active for 1 hour";
+            mailSenderService.send(email, "Forgot password code", message);
+            log.info("Email with forgotPasswordCode: {} was sent to: {}.", forgotPasswordCode, email);
         }
     }
 }

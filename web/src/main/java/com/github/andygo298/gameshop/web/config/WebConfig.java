@@ -1,6 +1,5 @@
 package com.github.andygo298.gameshop.web.config;
 
-import com.github.andygo298.gameshop.model.entity.Game;
 import com.github.andygo298.gameshop.service.config.ServiceConfig;
 import com.github.andygo298.gameshop.web.controller.CommentController;
 import com.github.andygo298.gameshop.web.controller.GameController;
@@ -39,7 +38,6 @@ public class WebConfig {
         return new GameController(serviceConfig.gameService(), serviceConfig.userService());
     }
     //others:
-
     @Bean
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(8);

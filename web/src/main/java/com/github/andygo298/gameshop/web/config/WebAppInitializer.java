@@ -4,6 +4,7 @@ import com.github.andygo298.gameshop.dao.config.DaoConfig;
 import com.github.andygo298.gameshop.service.config.ServiceConfig;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.Filter;
 
@@ -13,7 +14,8 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{
                 WebSecurityConfig.class,
-                RootConfig.class
+                RootConfig.class,
+
         };
     }
 
@@ -22,7 +24,8 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
         return new Class[]{
                 WebConfig.class,
                 ServiceConfig.class,
-                DaoConfig.class
+                DaoConfig.class,
+                SwaggerConfig.class
         };
     }
 
