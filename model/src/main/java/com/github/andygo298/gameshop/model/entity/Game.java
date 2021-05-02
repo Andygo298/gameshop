@@ -31,6 +31,7 @@ public class Game {
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "games", fetch = FetchType.EAGER )
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<User> users;
 
     public Game() {

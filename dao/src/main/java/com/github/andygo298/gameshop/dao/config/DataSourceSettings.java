@@ -1,7 +1,9 @@
 package com.github.andygo298.gameshop.dao.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 
+@Getter
 public class DataSourceSettings {
 
     @Value("${url}")
@@ -15,20 +17,4 @@ public class DataSourceSettings {
 
     @Value("${driver}")
     private String driver;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getNameAdmin() {
-        return nameAdmin;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getDriver() {
-        return driver;
-    }
 }

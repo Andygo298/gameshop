@@ -5,6 +5,8 @@ import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.model.entity.Game;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.service.GameService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class GameServiceImpl implements GameService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     @Autowired
     private GameDao gameDao;
     @Autowired
@@ -36,6 +39,7 @@ public class GameServiceImpl implements GameService {
         game.getUsers().add(user);
         userDao.save(user);
         gameDao.save(game);
+        log.info("Game - {} was successfully added to User: {}.", game.getGameName(), user.getEmail());
     }
 
     @Override
@@ -46,7 +50,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public Optional<Game> getGameById(Integer gameId){
+    public Optional<Game> getGameById(Integer gameId) {
         return gameDao.findById(gameId);
     }
 
@@ -54,9 +58,10 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public List<Game> getAllGamesByUserId(Integer userId) {
         Optional<User> userById = userDao.findById(userId);
-        if (userById.isPresent()){
+        if (userById.isPresent()) {
             return new ArrayList<>(userById.get().getGames());
-        }else {
+        } else {
+            log.error("User with id: {} not found.", userId);
             throw new EntityNotFoundException("user not found");
         }
 
@@ -72,7 +77,10 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public Game deleteGame(Integer gameId) {
         Game game = gameDao.findById(gameId)
-                .orElseThrow(() -> new EntityNotFoundException("game not Found"));
+                .orElseThrow(() -> {
+                    log.error("Game with id: {} not found.", gameId);
+                    return new EntityNotFoundException("game not Found");
+                });
         game.setDelete(true);
         return gameDao.save(game);
     }
@@ -84,5 +92,6 @@ public class GameServiceImpl implements GameService {
         game.getUsers().remove(user);
         userDao.save(user);
         gameDao.save(game);
+        log.warn("Game - {} was successfully removed from User: {}.", game.getGameName(), user.getEmail());
     }
 }

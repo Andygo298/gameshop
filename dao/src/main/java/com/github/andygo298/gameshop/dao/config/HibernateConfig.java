@@ -39,22 +39,6 @@ public class HibernateConfig {
 
     }
 
-    /*@Bean(destroyMethod = "destroy")
-    public LocalSessionFactoryBean entityManagerFactory() {
-        final LocalSessionFactoryBean sfb = new LocalSessionFactoryBean();
-        sfb.setDataSource(dataSource());
-        sfb.setPackagesToScan("com.github.andygo298.gameshop.model.entity");
-        sfb.setHibernateProperties(settingsConfig.hibernateProperties());
-        return sfb;
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(entityManagerFactory().getObject());
-        return transactionManager;
-    }*/
-
     @Bean
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();

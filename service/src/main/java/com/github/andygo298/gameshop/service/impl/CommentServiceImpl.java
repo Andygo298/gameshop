@@ -6,6 +6,8 @@ import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
 import com.github.andygo298.gameshop.model.entity.User;
 import com.github.andygo298.gameshop.service.CommentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.Optional;
 @Service
 public class CommentServiceImpl implements CommentService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     @Autowired
     private CommentDao commentDao;
     @Autowired
@@ -38,7 +41,10 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public Comment saveComment(Comment comment) {
         User userById = userDao.findById(comment.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not Found"));
+                .orElseThrow(() -> {
+                    log.error("User with id - {} not found.",comment.getUserId());
+                    return new EntityNotFoundException("User not Found");
+                });
         comment.setUser(userById);
         return commentDao.save(comment);
     }
@@ -59,7 +65,10 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public Comment deleteCommentById(Integer commentId) {
         Comment byId = commentDao.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Comment not Found"));
+                .orElseThrow(() -> {
+                    log.error("Comment with id - {} not found", commentId);
+                    return new EntityNotFoundException("Comment not Found");
+                });
         byId.setDelete(true);
         return commentDao.save(byId);
     }
