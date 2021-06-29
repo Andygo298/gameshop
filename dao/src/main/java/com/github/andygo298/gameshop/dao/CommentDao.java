@@ -18,7 +18,7 @@ public interface CommentDao extends JpaRepository<Comment, Integer> {
     int getTotalRatingByUserId(Integer userId);
 
     @Query(value = "select new com.github.andygo298.gameshop.model.RatingTraderDto(u.email,u.firstName,sum(c.commentMark)) " +
-            "from User as u " +
+            "from UserEntity as u " +
             "left join Comment as c on u.userId=c.userId " +
             "group by u.userId " +
             "order by sum(c.commentMark) desc")

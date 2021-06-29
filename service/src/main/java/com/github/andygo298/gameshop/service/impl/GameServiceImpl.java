@@ -3,7 +3,7 @@ package com.github.andygo298.gameshop.service.impl;
 import com.github.andygo298.gameshop.dao.GameDao;
 import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.model.entity.Game;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.service.GameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -34,12 +33,12 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void addGameToTrader(User user, Game game) {
-        user.getGames().add(game);
-        game.getUsers().add(user);
-        userDao.save(user);
+    public void addGameToTrader(UserEntity userEntity, Game game) {
+        userEntity.getGames().add(game);
+        game.getUserEntities().add(userEntity);
+        userDao.save(userEntity);
         gameDao.save(game);
-        log.info("Game - {} was successfully added to User: {}.", game.getGameName(), user.getEmail());
+        log.info("Game - {} was successfully added to User: {}.", game.getGameName(), userEntity.getEmail());
     }
 
     @Override
@@ -57,7 +56,7 @@ public class GameServiceImpl implements GameService {
     @Override
     @Transactional
     public List<Game> getAllGamesByUserId(Integer userId) {
-        Optional<User> userById = userDao.findById(userId);
+        Optional<UserEntity> userById = userDao.findById(userId);
         if (userById.isPresent()) {
             return new ArrayList<>(userById.get().getGames());
         } else {
@@ -87,11 +86,11 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void removeGameFromTrader(User user, Game game) {
-        user.getGames().remove(game);
-        game.getUsers().remove(user);
-        userDao.save(user);
+    public void removeGameFromTrader(UserEntity userEntity, Game game) {
+        userEntity.getGames().remove(game);
+        game.getUserEntities().remove(userEntity);
+        userDao.save(userEntity);
         gameDao.save(game);
-        log.warn("Game - {} was successfully removed from User: {}.", game.getGameName(), user.getEmail());
+        log.warn("Game - {} was successfully removed from User: {}.", game.getGameName(), userEntity.getEmail());
     }
 }

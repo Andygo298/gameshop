@@ -20,7 +20,7 @@ import java.util.Set;
 @Table(name = "user")
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class User implements Serializable {
+public class UserEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,9 +53,8 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-//    @Fetch(FetchMode.SELECT)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
@@ -64,19 +63,18 @@ public class User implements Serializable {
     @JoinTable(name = "user_game",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "game_id")})
-//    @Fetch(FetchMode.SELECT)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
     private Set<Game> games;
 
-    public User() {
+    public UserEntity() {
         this.comments = new HashSet<>();
         this.games = new HashSet<>();
     }
 
     @Builder(builderMethodName = "builder")
-    public static User newUser(String firstName, String lastName, String password, String email, LocalDate createdAt, Role role, Status status) {
-        return new User(firstName, lastName, password, email, createdAt, role, status);
+    public static UserEntity newUser(String firstName, String lastName, String password, String email, LocalDate createdAt, Role role, Status status) {
+        return new UserEntity(firstName, lastName, password, email, createdAt, role, status);
     }
 }

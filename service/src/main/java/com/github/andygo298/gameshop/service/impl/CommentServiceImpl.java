@@ -4,7 +4,7 @@ import com.github.andygo298.gameshop.dao.CommentDao;
 import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.service.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +40,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment saveComment(Comment comment) {
-        User userById = userDao.findById(comment.getUserId())
+        UserEntity userEntityById = userDao.findById(comment.getUserId())
                 .orElseThrow(() -> {
                     log.error("User with id - {} not found.",comment.getUserId());
                     return new EntityNotFoundException("User not Found");
                 });
-        comment.setUser(userById);
+        comment.setUserEntity(userEntityById);
         return commentDao.save(comment);
     }
 

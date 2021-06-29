@@ -3,7 +3,7 @@ package com.github.andygo298.gameshop.service.impl;
 import com.github.andygo298.gameshop.dao.GameDao;
 import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.model.entity.Game;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -80,12 +80,12 @@ class GameServiceImplTest {
                 .build();
         game2.setGameId(2);
         List<Game> games = new ArrayList<>(Arrays.asList(game1, game2));
-        User user = new User();
-        user.setFirstName("test");
-        user.setUserId(1);
-        user.getGames().addAll(games);
-        when(userDao.findById(user.getUserId())).thenReturn(Optional.of(user));
-        List<Game> allGamesByUserId = gameService.getAllGamesByUserId(user.getUserId());
+        UserEntity userEntity = new UserEntity();
+        userEntity.setFirstName("test");
+        userEntity.setUserId(1);
+        userEntity.getGames().addAll(games);
+        when(userDao.findById(userEntity.getUserId())).thenReturn(Optional.of(userEntity));
+        List<Game> allGamesByUserId = gameService.getAllGamesByUserId(userEntity.getUserId());
         assertFalse(allGamesByUserId.isEmpty());
         assertEquals(games.get(0).getGameName(),allGamesByUserId.get(0).getGameName());
     }

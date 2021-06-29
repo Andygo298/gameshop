@@ -2,7 +2,7 @@ package com.github.andygo298.gameshop.web.controller;
 
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.UserService;
@@ -20,12 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/api")
@@ -50,10 +48,10 @@ public class CommentController {
     )
     @PostMapping("/articles/{userId}/comments")
     public ResponseEntity<Comment> saveComment(@PathVariable("userId") Integer userId, @RequestBody CommentRequest commentRequest) {
-        User user = userService.getUserById(userId).orElseThrow(ExceptionMessagesUtil.userNotFound);
+        UserEntity userEntity = userService.getUserById(userId).orElseThrow(ExceptionMessagesUtil.userNotFound);
         Comment commentToSave = new Comment.CommentBuilder()
                 .withMessage(commentRequest.getMessage())
-                .withUserId(user.getUserId())
+                .withUserId(userEntity.getUserId())
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(commentRequest.getMark())
                 .build();
@@ -119,8 +117,8 @@ public class CommentController {
             }
     )
     @GetMapping("/users/traders")
-    public ResponseEntity<List<User>> getTraders() {
-        Optional<List<User>> allByRole = userService.findAllByRole(Role.TRADER);
+    public ResponseEntity<List<UserEntity>> getTraders() {
+        Optional<List<UserEntity>> allByRole = userService.findAllByRole(Role.TRADER);
         return ResponseEntity.ok(allByRole.orElseThrow(ExceptionMessagesUtil.userNotFound));
     }
 
@@ -165,11 +163,11 @@ public class CommentController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-        String currentUserEmail = ((User) authentication.getPrincipal()).getEmail();
-        Optional<User> byAuthEmail = userService.findByEmail(currentUserEmail);
+        String currentUserEmail = ((UserEntity) authentication.getPrincipal()).getEmail();
+        Optional<UserEntity> byAuthEmail = userService.findByEmail(currentUserEmail);
         if (isAdmin || byAuthEmail.isPresent()) {
-            User currentUser = byAuthEmail.orElseThrow(ExceptionMessagesUtil.userOrCommentsNotFound);
-            if (currentUser.getUserId().equals(userId) || isAdmin) {
+            UserEntity currentUserEntity = byAuthEmail.orElseThrow(ExceptionMessagesUtil.userOrCommentsNotFound);
+            if (currentUserEntity.getUserId().equals(userId) || isAdmin) {
                 log.info("Comment with id - {} was deleted.", commentId);
                 return ResponseEntity.ok(commentService.deleteCommentById(commentId));
             }else {

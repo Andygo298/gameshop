@@ -32,10 +32,10 @@ public class Game {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
-    private Set<User> users;
+    private Set<UserEntity> userEntities;
 
     public Game() {
-        this.users = new HashSet<>();
+        this.userEntities = new HashSet<>();
     }
 
     public static class GameBuilder{

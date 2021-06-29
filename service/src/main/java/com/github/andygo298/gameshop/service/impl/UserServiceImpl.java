@@ -2,8 +2,7 @@ package com.github.andygo298.gameshop.service.impl;
 
 import com.github.andygo298.gameshop.dao.RedisDao;
 import com.github.andygo298.gameshop.dao.UserDao;
-import com.github.andygo298.gameshop.model.RatingTraderDto;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
@@ -40,10 +39,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean saveActivateCode(User user) {
+    public boolean saveActivateCode(UserEntity userEntity) {
         String activateCode = UUID.randomUUID().toString();
-        activateCodeSendMessage(activateCode, user);
-        return redisDao.saveActivateCode(activateCode, user.getEmail());
+        activateCodeSendMessage(activateCode, userEntity);
+        return redisDao.saveActivateCode(activateCode, userEntity.getEmail());
     }
 
     @Override
@@ -62,20 +61,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User saveUser(User user) {
-        return userDao.save(user);
+    public UserEntity saveUser(UserEntity userEntity) {
+        return userDao.save(userEntity);
     }
 
     @Override
     @Transactional
-    public Optional<User> findByEmail(String userEmail) {
+    public Optional<UserEntity> findByEmail(String userEmail) {
         return userDao.getUserByEmail(userEmail);
     }
 
     @Override
     @Transactional
-    public Optional<User> login(String email, String password) {
-        Optional<User> userByEmail = userDao.getUserByEmail(email);
+    public Optional<UserEntity> login(String email, String password) {
+        Optional<UserEntity> userByEmail = userDao.getUserByEmail(email);
         if (userByEmail.isPresent()) {
             String encodePass = userByEmail.get().getPassword();
             if (passwordEncoder.matches(password, encodePass)) {
@@ -92,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Optional<User> activateUserByCode(String activateCode) {
+    public Optional<UserEntity> activateUserByCode(String activateCode) {
         String userEmail = redisDao.getByActivateCode(activateCode);
         if (Objects.nonNull(userEmail)) {
             return userDao.getUserByEmail(userEmail);
@@ -103,27 +102,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Optional<List<User>> findAllByRole(Role role) {
+    public Optional<List<UserEntity>> findAllByRole(Role role) {
         return userDao.findAllByRole(role);
     }
 
     @Override
     @Transactional
-    public Optional<User> getUserById(Integer userId) {
+    public Optional<UserEntity> getUserById(Integer userId) {
         return userDao.findById(userId);
     }
 
-    private void activateCodeSendMessage(String activateCode, User user) {
-        if (!StringUtils.isEmpty(user.getEmail())) {
+    private void activateCodeSendMessage(String activateCode, UserEntity userEntity) {
+        if (!StringUtils.isEmpty(userEntity.getEmail())) {
             String message = String.format(
                     "Hello, %s! \n" +
                             "Welcome to GAMESHOP.\nPlease, visit next link: http://%s/auth/confirm?activateCode=%s",
-                    user.getFirstName(),
+                    userEntity.getFirstName(),
                     "localhost:80/gameshop",
                     activateCode
             );
-            mailSenderService.send(user.getEmail(), "Activation code", message);
-            log.info("Email with activateCode: {} was sent to: {}.", activateCode, user.getEmail());
+            mailSenderService.send(userEntity.getEmail(), "Activation code", message);
+            log.info("Email with activateCode: {} was sent to: {}.", activateCode, userEntity.getEmail());
         }
     }
 
