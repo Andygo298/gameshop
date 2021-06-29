@@ -43,7 +43,7 @@ public class ServiceConfig {
 
     @Bean
     public UserService userService() {
-        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService(), passwordEncoder());
+        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService());
     }
 
     @Bean

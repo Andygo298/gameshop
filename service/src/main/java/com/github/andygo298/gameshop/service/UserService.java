@@ -14,6 +14,5 @@ public interface UserService {
     UserEntity saveUser(UserEntity userEntity);
     Optional<UserEntity> getUserById(Integer userId);
     Optional<UserEntity> findByEmail(String email);
-    Optional<UserEntity> login(String email, String password);
     Optional<List<UserEntity>> findAllByRole(Role role);
  }

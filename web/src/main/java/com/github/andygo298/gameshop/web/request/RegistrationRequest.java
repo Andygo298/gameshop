@@ -1,6 +1,5 @@
 package com.github.andygo298.gameshop.web.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.andygo298.gameshop.model.enums.Role;
 import lombok.Data;
 

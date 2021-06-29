@@ -8,6 +8,7 @@ import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.UserService;
 import com.github.andygo298.gameshop.web.config.SwaggerConfig;
 import com.github.andygo298.gameshop.web.controller.util.ExceptionMessagesUtil;
+import com.github.andygo298.gameshop.model.CommentFilter;
 import com.github.andygo298.gameshop.web.request.CommentRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -134,6 +136,26 @@ public class CommentController {
     public ResponseEntity<List<Comment>> getAllComments(@PathVariable("userId") Integer userId) {
         Optional<List<Comment>> commentsByUserId = commentService.getCommentsByUserId(userId);
         return ResponseEntity.ok(commentsByUserId.orElseThrow(ExceptionMessagesUtil.userNotFound));
+    }
+
+    @GetMapping("/users/{userId}/commentsPgn")
+    public Page<Comment> getCommentsWithPgn(@PathVariable("userId") Integer userId,
+                                       @RequestParam(value = "page") String page,
+                                       @RequestParam(value = "limit") String limit,
+                                       @RequestParam(value = "createdAt",required = false) String createdAt,
+                                       @RequestParam(value = "mark",required = false) Integer mark,
+                                       @RequestParam(value = "sort") String sort,
+                                       @RequestParam(value = "order") String order){
+        CommentFilter commentFilter = CommentFilter.builder()
+                .userId(userId)
+                .page(Integer.parseInt(page))
+                .limit(Integer.parseInt(limit))
+                .createdAt(createdAt)
+                .mark(mark)
+                .sort(sort.toLowerCase())
+                .order(order.toLowerCase())
+                .build();
+        return commentService.getCommentWithPagination(commentFilter);
     }
 
     @ApiOperation("Retrieves user's comment using User ID & comment ID.")
