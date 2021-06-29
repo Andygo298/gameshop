@@ -77,6 +77,7 @@
                 <version>2.2</version>
                 <configuration>
                     <url>http://localhost:80/manager/text</url>
+                    <server>myserver</server>
                     <username>admin</username>
                     <password>admin</password>
                     <path>/gameshop</path>
