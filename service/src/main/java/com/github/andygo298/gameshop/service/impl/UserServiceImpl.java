@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -35,7 +36,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public boolean saveActivateCode(UserEntity userEntity) {
         String activateCode = UUID.randomUUID().toString();
         activateCodeSendMessage(activateCode, userEntity);
@@ -43,7 +43,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public boolean saveForgotPasswordCode(String email) {
         String forgotPasswordCode = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999 + 1));
         forgotPasswordSendMessage(forgotPasswordCode, email);
@@ -51,25 +50,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public String getByForgotPasswordCode(String forgotPasswordCode) {
         return redisDao.getByForgotPasswordCode(forgotPasswordCode);
     }
 
     @Override
-    @Transactional
     public UserEntity saveUser(UserEntity userEntity) {
         return userDao.save(userEntity);
     }
 
     @Override
-    @Transactional
     public Optional<UserEntity> findByEmail(String userEmail) {
         return userDao.getUserByEmail(userEmail);
     }
 
     @Override
-    @Transactional
     public Optional<UserEntity> activateUserByCode(String activateCode) {
         String userEmail = redisDao.getByActivateCode(activateCode);
         if (Objects.nonNull(userEmail)) {
@@ -80,13 +75,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public Optional<List<UserEntity>> findAllByRole(Role role) {
         return userDao.findAllByRole(role);
     }
 
     @Override
-    @Transactional
     public Optional<UserEntity> getUserById(Integer userId) {
         return userDao.findById(userId);
     }

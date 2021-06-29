@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
@@ -33,19 +34,16 @@ public class CommentServiceImpl implements CommentService {
     private UserDao userDao;
 
     @Override
-    @Transactional
     public Optional<List<Comment>> getCommentsByUserId(Integer userId) {
         return commentDao.getCommentsByUserId(userId);
     }
 
     @Override
-    @Transactional
     public Optional<Comment> getCommentByUserIdAndCommentId(Integer userId, Integer commentId) {
         return commentDao.getCommentByUserIdAndCommentId(userId, commentId);
     }
 
     @Override
-    @Transactional
     public Page<Comment> getCommentWithPagination(CommentFilter commentFilter) {
         Pageable pageable;
         if (commentFilter.getOrder().equals("asc")) {
@@ -62,7 +60,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public Comment saveComment(Comment comment) {
         UserEntity userEntityById = userDao.findById(comment.getUserId())
                 .orElseThrow(() -> {
@@ -74,19 +71,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public Optional<Comment> getCommentById(Integer commentId) {
         return commentDao.findById(commentId);
     }
 
     @Override
-    @Transactional
     public Comment updateComment(Comment commentToUpdate) {
         return commentDao.save(commentToUpdate);
     }
 
     @Override
-    @Transactional
     public Comment deleteCommentById(Integer commentId) {
         Comment byId = commentDao.findById(commentId)
                 .orElseThrow(() -> {
@@ -98,7 +92,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public int getTotalRatingByUserId(Integer userId) {
         return commentDao.getTotalRatingByUserId(userId);
     }

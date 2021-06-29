@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class GameServiceImpl implements GameService {
 
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
@@ -26,13 +27,11 @@ public class GameServiceImpl implements GameService {
     private UserDao userDao;
 
     @Override
-    @Transactional
     public Game saveGame(Game game) {
         return gameDao.save(game);
     }
 
     @Override
-    @Transactional
     public void addGameToTrader(UserEntity userEntity, Game game) {
         userEntity.getGames().add(game);
         game.getUserEntities().add(userEntity);
@@ -42,19 +41,16 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional
     public Game updateGame(Game gameToUpdate) {
         return gameDao.save(gameToUpdate);
     }
 
     @Override
-    @Transactional
     public Optional<Game> getGameById(Integer gameId) {
         return gameDao.findById(gameId);
     }
 
     @Override
-    @Transactional
     public List<Game> getAllGamesByUserId(Integer userId) {
         Optional<UserEntity> userById = userDao.findById(userId);
         if (userById.isPresent()) {
@@ -67,13 +63,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional
     public List<Game> getAllGames() {
         return gameDao.findAll();
     }
 
     @Override
-    @Transactional
     public Game deleteGame(Integer gameId) {
         Game game = gameDao.findById(gameId)
                 .orElseThrow(() -> {
@@ -85,7 +79,6 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @Transactional
     public void removeGameFromTrader(UserEntity userEntity, Game game) {
         userEntity.getGames().remove(game);
         game.getUserEntities().remove(userEntity);
