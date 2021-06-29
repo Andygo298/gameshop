@@ -1,7 +1,7 @@
 package com.github.andygo298.gameshop.service.impl;
 
 import com.github.andygo298.gameshop.dao.UserDao;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ import static org.mockito.BDDMockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserEntityServiceImplTest {
 
     @Mock
     private UserDao userDao;
@@ -33,7 +33,7 @@ class UserServiceImplTest {
 
     @Test
     void saveUser() {
-        User user2 = User.builder()
+        UserEntity userEntity2 = UserEntity.builder()
                 .firstName("test2")
                 .lastName("testov2")
                 .createdAt(LocalDateTime.now().toLocalDate())
@@ -42,17 +42,17 @@ class UserServiceImplTest {
                 .role(Role.TRADER)
                 .status(Status.ACTIVE)
                 .build();
-        user2.setUserId(2);
-        when(userDao.save(user2)).thenReturn(user2);
-        User user = userService.saveUser(user2);
-        assertNotNull(user);
-        assertEquals("email_2@cao.com",user.getEmail());
+        userEntity2.setUserId(2);
+        when(userDao.save(userEntity2)).thenReturn(userEntity2);
+        UserEntity userEntity = userService.saveUser(userEntity2);
+        assertNotNull(userEntity);
+        assertEquals("email_2@cao.com", userEntity.getEmail());
     }
 
 
     @Test
     void findByEmailTest() {
-        User user1 = User.builder()
+        UserEntity userEntity1 = UserEntity.builder()
                 .firstName("test1")
                 .lastName("testov1")
                 .createdAt(LocalDateTime.now().toLocalDate())
@@ -61,17 +61,17 @@ class UserServiceImplTest {
                 .role(Role.TRADER)
                 .status(Status.ACTIVE)
                 .build();
-        user1.setUserId(1);
-        Optional<User> xxx = Optional.of(user1);
-        when(userDao.getUserByEmail(user1.getEmail())).thenReturn(xxx);
-        Optional<User> byEmail = userService.findByEmail("email_1@cao.com");
+        userEntity1.setUserId(1);
+        Optional<UserEntity> xxx = Optional.of(userEntity1);
+        when(userDao.getUserByEmail(userEntity1.getEmail())).thenReturn(xxx);
+        Optional<UserEntity> byEmail = userService.findByEmail("email_1@cao.com");
         assertTrue(byEmail.isPresent());
         assertEquals("email_1@cao.com", byEmail.get().getEmail());
     }
 
     @Test
     void findAllByRole() {
-        User user1 = User.builder()
+        UserEntity userEntity1 = UserEntity.builder()
                 .firstName("test1")
                 .lastName("testov1")
                 .createdAt(LocalDateTime.now().toLocalDate())
@@ -80,7 +80,7 @@ class UserServiceImplTest {
                 .role(Role.TRADER)
                 .status(Status.ACTIVE)
                 .build();
-        User user2 = User.builder()
+        UserEntity userEntity2 = UserEntity.builder()
                 .firstName("test2")
                 .lastName("testov2")
                 .createdAt(LocalDateTime.now().toLocalDate())
@@ -89,16 +89,16 @@ class UserServiceImplTest {
                 .role(Role.TRADER)
                 .status(Status.ACTIVE)
                 .build();
-        ArrayList<User> users = new ArrayList<>(Arrays.asList(user1, user2));
-        when(userDao.findAllByRole(Role.TRADER)).thenReturn(Optional.of(users));
-        Optional<List<User>> allByRole = userService.findAllByRole(Role.TRADER);
+        ArrayList<UserEntity> userEntities = new ArrayList<>(Arrays.asList(userEntity1, userEntity2));
+        when(userDao.findAllByRole(Role.TRADER)).thenReturn(Optional.of(userEntities));
+        Optional<List<UserEntity>> allByRole = userService.findAllByRole(Role.TRADER);
         assertTrue(allByRole.isPresent());
-        assertEquals(users.size() ,allByRole.get().size());
+        assertEquals(userEntities.size() ,allByRole.get().size());
     }
 
     @Test
     void getUserById() {
-        User user1 = User.builder()
+        UserEntity userEntity1 = UserEntity.builder()
                 .firstName("test1")
                 .lastName("testov1")
                 .createdAt(LocalDateTime.now().toLocalDate())
@@ -107,10 +107,10 @@ class UserServiceImplTest {
                 .role(Role.TRADER)
                 .status(Status.ACTIVE)
                 .build();
-        user1.setUserId(1);
-        given(userDao.findById(user1.getUserId())).willReturn(Optional.of(user1));
-        Optional<User> userById = userService.getUserById(user1.getUserId());
+        userEntity1.setUserId(1);
+        given(userDao.findById(userEntity1.getUserId())).willReturn(Optional.of(userEntity1));
+        Optional<UserEntity> userById = userService.getUserById(userEntity1.getUserId());
         assertTrue(userById.isPresent());
-        assertEquals(user1.getEmail(),userById.get().getEmail());
+        assertEquals(userEntity1.getEmail(),userById.get().getEmail());
     }
 }

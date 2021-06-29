@@ -4,7 +4,7 @@ import com.github.andygo298.gameshop.dao.CommentDao;
 import com.github.andygo298.gameshop.dao.UserDao;
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,30 +38,30 @@ class CommentServiceImplTest {
 
     @Test
     void getCommentsByUserIdTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         Optional<List<Comment>> comments = Optional.of(Collections.singletonList(testComment));
-        when(commentDao.getCommentsByUserId(user.getUserId())).thenReturn(comments);
-        Optional<List<Comment>> actualCommentsByUserId = commentService.getCommentsByUserId(user.getUserId());
+        when(commentDao.getCommentsByUserId(userEntity.getUserId())).thenReturn(comments);
+        Optional<List<Comment>> actualCommentsByUserId = commentService.getCommentsByUserId(userEntity.getUserId());
         assertTrue(actualCommentsByUserId.isPresent());
         assertEquals(testComment.getMessage(), actualCommentsByUserId.get().get(0).getMessage());
     }
 
     @Test
     void getCommentByUserIdAndCommentIdTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         testComment.setCommentId(1);
         when(commentDao.getCommentByUserIdAndCommentId(testComment.getCommentId(), testComment.getUserId()))
@@ -74,15 +74,15 @@ class CommentServiceImplTest {
 
     @Test
     void saveCommentTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
-        given(userDao.findById(user.getUserId())).willReturn(Optional.of(user));
+        given(userDao.findById(userEntity.getUserId())).willReturn(Optional.of(userEntity));
         when(commentDao.save(testComment)).thenReturn(testComment);
         Comment actualComment = commentService.saveComment(testComment);
         assertNotNull(actualComment);
@@ -91,13 +91,13 @@ class CommentServiceImplTest {
 
     @Test
     void saveCommentFailTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         when(userDao.findById(anyInt())).thenThrow(EntityNotFoundException.class);
         assertThrows(EntityNotFoundException.class, () -> {
@@ -107,13 +107,13 @@ class CommentServiceImplTest {
 
     @Test
     void getCommentByIdTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         testComment.setCommentId(1);
         when(commentDao.findById(testComment.getCommentId())).thenReturn(Optional.of(testComment));
@@ -124,12 +124,12 @@ class CommentServiceImplTest {
 
     @Test
     void updateCommentTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testUpdateComment = new Comment.CommentBuilder().withMessage("test update Message")
                 .withCommentMark(2)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         when(commentDao.save(testUpdateComment)).thenReturn(testUpdateComment);
         Comment comment = commentService.updateComment(testUpdateComment);
@@ -139,20 +139,20 @@ class CommentServiceImplTest {
 
     @Test
     void deleteCommentByIdTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         Comment testComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         when(commentDao.findById(testComment.getCommentId())).thenReturn(Optional.of(testComment));
         Comment testDelComment = new Comment.CommentBuilder().withMessage("test Message")
                 .withCreatedAt(LocalDateTime.now().toLocalDate())
                 .withCommentMark(4)
-                .withUser(user)
-                .withUserId(user.getUserId())
+                .withUser(userEntity)
+                .withUserId(userEntity.getUserId())
                 .build();
         testDelComment.setDelete(true);
         when(commentDao.save(testComment)).thenReturn(testDelComment);
@@ -163,11 +163,11 @@ class CommentServiceImplTest {
 
     @Test
     void getTotalRatingByUserIdTest() {
-        User user = new User();
-        user.setUserId(1);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(1);
         int totalRating = 45;
-        when(commentDao.getTotalRatingByUserId(user.getUserId())).thenReturn(totalRating);
-        int actualRating = commentService.getTotalRatingByUserId(user.getUserId());
+        when(commentDao.getTotalRatingByUserId(userEntity.getUserId())).thenReturn(totalRating);
+        int actualRating = commentService.getTotalRatingByUserId(userEntity.getUserId());
         assertEquals(totalRating, actualRating);
     }
 

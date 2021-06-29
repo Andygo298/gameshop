@@ -1,15 +1,12 @@
 package com.github.andygo298.gameshop.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.andygo298.gameshop.model.entity.jsonUtil.LocalDateDeserializer;
 import com.github.andygo298.gameshop.model.entity.jsonUtil.LocalDateSerializer;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -49,7 +46,7 @@ public class Comment implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private User user;
+    private UserEntity userEntity;
 
     public Comment() {
         this.commentMark = 0;
@@ -78,8 +75,8 @@ public class Comment implements Serializable {
             return this;
         }
 
-        public Comment.CommentBuilder withUser(User user) {
-            newComment.user = user;
+        public Comment.CommentBuilder withUser(UserEntity userEntity) {
+            newComment.userEntity = userEntity;
             return this;
         }
 

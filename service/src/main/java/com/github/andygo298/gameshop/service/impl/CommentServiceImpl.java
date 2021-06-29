@@ -2,18 +2,25 @@ package com.github.andygo298.gameshop.service.impl;
 
 import com.github.andygo298.gameshop.dao.CommentDao;
 import com.github.andygo298.gameshop.dao.UserDao;
+import com.github.andygo298.gameshop.model.CommentFilter;
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.service.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -39,13 +46,30 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    public Page<Comment> getCommentWithPagination(CommentFilter commentFilter) {
+        Pageable pageable;
+        if (commentFilter.getOrder().equals("asc")) {
+            pageable = PageRequest.of(commentFilter.getPage(), commentFilter.getLimit(), Sort.by(commentFilter.getSort()).ascending());
+        } else {
+            pageable = PageRequest.of(commentFilter.getPage(), commentFilter.getLimit(), Sort.by(commentFilter.getSort()).descending());
+        }
+
+        if (Objects.nonNull(commentFilter.getCreatedAt())){
+            return commentDao.findAll(pageable, commentFilter.getUserId(), LocalDate.parse(commentFilter.getCreatedAt()), commentFilter.getMark());
+        }else {
+            return commentDao.findAll(pageable, commentFilter.getUserId(), null, commentFilter.getMark());
+        }
+    }
+
+    @Override
+    @Transactional
     public Comment saveComment(Comment comment) {
-        User userById = userDao.findById(comment.getUserId())
+        UserEntity userEntityById = userDao.findById(comment.getUserId())
                 .orElseThrow(() -> {
-                    log.error("User with id - {} not found.",comment.getUserId());
+                    log.error("User with id - {} not found.", comment.getUserId());
                     return new EntityNotFoundException("User not Found");
                 });
-        comment.setUser(userById);
+        comment.setUserEntity(userEntityById);
         return commentDao.save(comment);
     }
 

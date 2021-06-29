@@ -5,10 +5,7 @@ import com.github.andygo298.gameshop.service.CommentService;
 import com.github.andygo298.gameshop.service.GameService;
 import com.github.andygo298.gameshop.service.MailSenderService;
 import com.github.andygo298.gameshop.service.UserService;
-import com.github.andygo298.gameshop.service.impl.CommentServiceImpl;
-import com.github.andygo298.gameshop.service.impl.GameServiceImpl;
-import com.github.andygo298.gameshop.service.impl.MailSenderServiceImpl;
-import com.github.andygo298.gameshop.service.impl.UserServiceImpl;
+import com.github.andygo298.gameshop.service.impl.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +37,13 @@ public class ServiceConfig {
     }
 
     @Bean
+    public JwtUserDetailsServiceImpl jwtUserDetailsService(){
+        return new JwtUserDetailsServiceImpl();
+    }
+
+    @Bean
     public UserService userService() {
-        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService(), passwordEncoder());
+        return new UserServiceImpl(daoConfig.redisDao(), mailSenderService());
     }
 
     @Bean

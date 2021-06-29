@@ -1,7 +1,7 @@
 package com.github.andygo298.gameshop.web.controller;
 
 import com.github.andygo298.gameshop.model.entity.Game;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.service.GameService;
 import com.github.andygo298.gameshop.service.UserService;
 import com.github.andygo298.gameshop.web.config.SwaggerConfig;
@@ -16,10 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/api")
@@ -72,13 +70,13 @@ public class GameController {
     )
     @PostMapping("/users/{userId}/games/{gameId}")
     public ResponseEntity<String> addGameForTrader(@PathVariable("userId") Integer userId, @PathVariable("gameId") Integer gameId) {
-        User user = userService.getUserById(userId)
+        UserEntity userEntity = userService.getUserById(userId)
                 .orElseThrow(ExceptionMessagesUtil.userNotFound);
         Game game = gameService.getGameById(gameId)
                 .orElseThrow(ExceptionMessagesUtil.gameNotFound);
-        gameService.addGameToTrader(user, game);
+        gameService.addGameToTrader(userEntity, game);
         log.info("user - {} was successfully saved the game with id - {}.", userId, gameId);
-        return ResponseEntity.ok("Game was added to user - " + user.getFirstName());
+        return ResponseEntity.ok("Game was added to user - " + userEntity.getFirstName());
     }
 
     @ApiOperation("Create game.")
@@ -124,11 +122,11 @@ public class GameController {
     )
     @DeleteMapping("/users/{userId}/games/{gameId}")
     public ResponseEntity<String> removeGameFromTrader(@PathVariable("userId") Integer userId, @PathVariable("gameId") Integer gameId) {
-        User user = userService.getUserById(userId).orElseThrow(ExceptionMessagesUtil.userNotFound);
+        UserEntity userEntity = userService.getUserById(userId).orElseThrow(ExceptionMessagesUtil.userNotFound);
         Game game = gameService.getGameById(gameId).orElseThrow(ExceptionMessagesUtil.gameNotFound);
-        gameService.removeGameFromTrader(user, game);
-        log.info("Game - {} was successfully removed from user - {}",game.getGameName(),user.getEmail());
-        return ResponseEntity.ok("Game was removed from user - " + user.getFirstName());
+        gameService.removeGameFromTrader(userEntity, game);
+        log.info("Game - {} was successfully removed from user - {}",game.getGameName(), userEntity.getEmail());
+        return ResponseEntity.ok("Game was removed from user - " + userEntity.getFirstName());
     }
     @ApiOperation("Deletes game.")
     @ApiResponses(

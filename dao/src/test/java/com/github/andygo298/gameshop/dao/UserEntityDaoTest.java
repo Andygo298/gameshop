@@ -1,10 +1,9 @@
 package com.github.andygo298.gameshop.dao;
 
 import com.github.andygo298.gameshop.dao.config.DaoConfig;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @Rollback
 
-public class UserDaoTest {
+public class UserEntityDaoTest {
 
     @Autowired
     private UserDao userDao;
@@ -36,7 +35,7 @@ public class UserDaoTest {
 
     @Test
     void saveUserTest() {
-        User userToSave = User.builder()
+        UserEntity userEntityToSave = UserEntity.builder()
                 .firstName("test")
                 .lastName("testov")
                 .password(passwordEncoder.encode("test123"))
@@ -45,15 +44,15 @@ public class UserDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        User saveU = userDao.save(userToSave);
-        Optional<User> actualUser = userDao.findById(saveU.getUserId());
+        UserEntity saveU = userDao.save(userEntityToSave);
+        Optional<UserEntity> actualUser = userDao.findById(saveU.getUserId());
         assertTrue(actualUser.isPresent());
-        assertEquals(actualUser.get().getEmail(), userToSave.getEmail());
+        assertEquals(actualUser.get().getEmail(), userEntityToSave.getEmail());
     }
 
     @Test
     void getUserByEmail() {
-        User userToSave = User.builder()
+        UserEntity userEntityToSave = UserEntity.builder()
                 .firstName("test")
                 .lastName("testov")
                 .password(passwordEncoder.encode("test123"))
@@ -62,15 +61,15 @@ public class UserDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        userDao.save(userToSave);
-        Optional<User> actualUserByEmail = userDao.getUserByEmail(userToSave.getEmail());
+        userDao.save(userEntityToSave);
+        Optional<UserEntity> actualUserByEmail = userDao.getUserByEmail(userEntityToSave.getEmail());
         assertTrue(actualUserByEmail.isPresent());
-        assertEquals(actualUserByEmail.get().getEmail(), userToSave.getEmail());
+        assertEquals(actualUserByEmail.get().getEmail(), userEntityToSave.getEmail());
     }
 
     @Test
     void findAllByRoleTest() {
-        User trader1 = User.builder()
+        UserEntity trader1 = UserEntity.builder()
                 .firstName("test1")
                 .lastName("testov1")
                 .password(passwordEncoder.encode("test123"))
@@ -79,7 +78,7 @@ public class UserDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        User trader2 = User.builder()
+        UserEntity trader2 = UserEntity.builder()
                 .firstName("test2")
                 .lastName("testov2")
                 .password(passwordEncoder.encode("test123"))
@@ -88,11 +87,11 @@ public class UserDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        ArrayList<User> users = new ArrayList<>(Arrays.asList(trader1, trader2));
-        userDao.saveAll(users);
-        Optional<List<User>> allByRole = userDao.findAllByRole(Role.TRADER);
+        ArrayList<UserEntity> userEntities = new ArrayList<>(Arrays.asList(trader1, trader2));
+        userDao.saveAll(userEntities);
+        Optional<List<UserEntity>> allByRole = userDao.findAllByRole(Role.TRADER);
         assertTrue(allByRole.isPresent());
-        assertEquals(allByRole.get().size(), users.size());
+        assertEquals(allByRole.get().size(), userEntities.size());
         assertEquals(allByRole.get().get(0).getFirstName(), trader1.getFirstName());
     }
 }

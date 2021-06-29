@@ -2,7 +2,6 @@ package com.github.andygo298.gameshop.dao.config;
 
 import com.github.andygo298.gameshop.dao.RedisDao;
 import com.github.andygo298.gameshop.dao.impl.RedisDaoImpl;
-import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

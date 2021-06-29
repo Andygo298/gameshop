@@ -3,13 +3,10 @@ package com.github.andygo298.gameshop.dao;
 import com.github.andygo298.gameshop.dao.config.DaoConfig;
 import com.github.andygo298.gameshop.model.RatingTraderDto;
 import com.github.andygo298.gameshop.model.entity.Comment;
-import com.github.andygo298.gameshop.model.entity.User;
+import com.github.andygo298.gameshop.model.entity.UserEntity;
 import com.github.andygo298.gameshop.model.enums.Role;
 import com.github.andygo298.gameshop.model.enums.Status;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -42,7 +38,7 @@ public class CommentDaoTest {
 
     @Test
     void saveCommentTest() {
-        User userToSave = User.builder()
+        UserEntity userEntityToSave = UserEntity.builder()
                 .firstName("test")
                 .lastName("testov")
                 .password(passwordEncoder.encode("test123"))
@@ -51,8 +47,8 @@ public class CommentDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        userDao.saveAndFlush(userToSave);
-        Optional<User> byId = userDao.findById(1);
+        userDao.saveAndFlush(userEntityToSave);
+        Optional<UserEntity> byId = userDao.findById(1);
         Comment testComment = new Comment.CommentBuilder()
                 .withMessage("TestMessage")
                 .withCommentMark(4)
@@ -68,7 +64,7 @@ public class CommentDaoTest {
 
     @Test
     void getCommentByUserIdAndCommentIdTest() {
-        User userToSave = User.builder()
+        UserEntity userEntityToSave = UserEntity.builder()
                 .firstName("test1")
                 .lastName("testov1")
                 .password(passwordEncoder.encode("test123"))
@@ -77,8 +73,8 @@ public class CommentDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        userDao.saveAndFlush(userToSave);
-        Optional<User> byId = userDao.findById(1);
+        userDao.saveAndFlush(userEntityToSave);
+        Optional<UserEntity> byId = userDao.findById(1);
         Comment testComment = new Comment.CommentBuilder()
                 .withMessage("TestMessage")
                 .withCommentMark(4)
@@ -94,7 +90,7 @@ public class CommentDaoTest {
 
     @Test
     void getCommentsByUserId() {
-        User userToSave = User.builder()
+        UserEntity userEntityToSave = UserEntity.builder()
                 .firstName("test22")
                 .lastName("testov22")
                 .password(passwordEncoder.encode("test123"))
@@ -103,8 +99,8 @@ public class CommentDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        User save = userDao.saveAndFlush(userToSave);
-        Optional<User> byId = userDao.findById(save.getUserId());
+        UserEntity save = userDao.saveAndFlush(userEntityToSave);
+        Optional<UserEntity> byId = userDao.findById(save.getUserId());
         Comment testComment1 = new Comment.CommentBuilder()
                 .withMessage("TestMessage11")
                 .withCommentMark(4)
@@ -129,7 +125,7 @@ public class CommentDaoTest {
 
     @Test
     void getTotalRatingByUserId() {
-        User userToSave = User.builder()
+        UserEntity userEntityToSave = UserEntity.builder()
                 .firstName("test4")
                 .lastName("testov4")
                 .password(passwordEncoder.encode("test123"))
@@ -138,8 +134,8 @@ public class CommentDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        User save = userDao.saveAndFlush(userToSave);
-        Optional<User> byId = userDao.findById(save.getUserId());
+        UserEntity save = userDao.saveAndFlush(userEntityToSave);
+        Optional<UserEntity> byId = userDao.findById(save.getUserId());
         Comment testComment1 = new Comment.CommentBuilder()
                 .withMessage("TestMessage1")
                 .withCommentMark(1)
@@ -165,7 +161,7 @@ public class CommentDaoTest {
     void getTradersRating() {
         userDao.deleteAll();
         commentDao.deleteAll();
-        User userToSave1 = User.builder()
+        UserEntity userEntityToSave1 = UserEntity.builder()
                 .firstName("test5")
                 .lastName("testov5")
                 .password(passwordEncoder.encode("test123"))
@@ -174,7 +170,7 @@ public class CommentDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        User userToSave2 = User.builder()
+        UserEntity userEntityToSave2 = UserEntity.builder()
                 .firstName("test6")
                 .lastName("testov6")
                 .password(passwordEncoder.encode("test123"))
@@ -183,10 +179,10 @@ public class CommentDaoTest {
                 .status(Status.ACTIVE)
                 .createdAt(LocalDateTime.now().toLocalDate())
                 .build();
-        List<User> users = userDao.saveAll(new ArrayList<>(Arrays.asList(userToSave1, userToSave2)));
+        List<UserEntity> userEntities = userDao.saveAll(new ArrayList<>(Arrays.asList(userEntityToSave1, userEntityToSave2)));
 
-        Optional<User> byId1 = userDao.findById(users.get(0).getUserId());
-        Optional<User> byId2 = userDao.findById(users.get(1).getUserId());
+        Optional<UserEntity> byId1 = userDao.findById(userEntities.get(0).getUserId());
+        Optional<UserEntity> byId2 = userDao.findById(userEntities.get(1).getUserId());
         Comment testComment1 = new Comment.CommentBuilder()
                 .withMessage("TestMessage1")
                 .withCommentMark(4)
@@ -204,7 +200,7 @@ public class CommentDaoTest {
         commentDao.saveAll(new ArrayList<>(Arrays.asList(testComment1, testComment2)));
         List<RatingTraderDto> tradersRating = commentDao.getTradersRating();
         assertFalse(tradersRating.isEmpty());
-        assertEquals(tradersRating.get(1).getFirstName(), userToSave1.getFirstName());
+        assertEquals(tradersRating.get(1).getFirstName(), userEntityToSave1.getFirstName());
     }
 
 }
