@@ -1,9 +1,7 @@
 package com.github.andygo298.gameshop.web.config;
 
-import com.github.andygo298.gameshop.service.config.ServiceConfig;
 import com.github.andygo298.gameshop.web.jwt.JwtAuthenticationEntryPoint;
 import com.github.andygo298.gameshop.web.jwt.JwtRequestFilter;
-import com.github.andygo298.gameshop.web.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -46,9 +44,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // configure AuthenticationManager so that it knows from where to load
-        // user for matching credentials
-        // Use BCryptPasswordEncoder
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
     }
 

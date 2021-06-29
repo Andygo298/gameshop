@@ -11,7 +11,6 @@ import com.github.andygo298.gameshop.web.config.SwaggerConfig;
 import com.github.andygo298.gameshop.web.controller.util.ExceptionMessagesUtil;
 import com.github.andygo298.gameshop.web.jwt.JwtTokenUtil;
 import com.github.andygo298.gameshop.web.request.ForgotPasswordRequest;
-import com.github.andygo298.gameshop.web.request.LoginRequest;
 import com.github.andygo298.gameshop.web.request.RegistrationRequest;
 import com.github.andygo298.gameshop.web.request.ResetPasswordRequest;
 import io.swagger.annotations.Api;
@@ -27,27 +26,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 @RestController
 @RequestMapping("/")
-@Api(tags = { SwaggerConfig.TAG_1 })
+@Api(tags = {SwaggerConfig.TAG_1})
 public class UserController {
-
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -77,21 +67,6 @@ public class UserController {
                     @ApiResponse(code = 401, message = "You are not authorized or your account isn't activated.")
             }
     )
-    /*@PostMapping("/auth/login")
-    public ResponseEntity<UserEntity> login(@RequestBody LoginRequest loginRq) {
-        UserEntity userEntity = userService.login(loginRq.getEmail(), loginRq.getPassword())
-                .orElseThrow(ExceptionMessagesUtil.unauthorizedError);
-        if (userEntity.getStatus().equals(Status.BANNED)){
-            throw ExceptionMessagesUtil.userIsNotActivated.apply(loginRq.getEmail());
-        }
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                userEntity, null, getAuthorities(userEntity)
-        );
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        log.info("User - {} was authenticated with role - {}.", userEntity.getEmail(), userEntity.getRole());
-        return ResponseEntity.status(HttpStatus.OK).body(userEntity);
-    }*/
-
     @PostMapping("/auth/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -99,15 +74,11 @@ public class UserController {
         final String token = jwtTokenUtil.generateToken(userDetails);
         return ResponseEntity.ok(new JwtResponse(token));
     }
+
     private void authenticate(String username, String password) throws Exception {
         try {
-            UserEntity userEntity = userService.login(username, password)
-                    .orElseThrow(ExceptionMessagesUtil.unauthorizedError);
-            if (userEntity.getStatus().equals(Status.BANNED)){
-                throw ExceptionMessagesUtil.userIsNotActivated.apply(username);
-            }
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password, getAuthorities(userEntity)));
+                    new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
@@ -233,33 +204,4 @@ public class UserController {
         }
     }
 
-    @ApiOperation("Logout")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "User successfully logout"),
-                    @ApiResponse(code = 500, message = "Logout exception.")
-            }
-    )
-    @GetMapping("/auth/logout")
-    public ResponseEntity<String> doGet(HttpServletRequest rq) {
-        SecurityContextHolder.clearContext();
-        try {
-            String email = ((UserEntity) SecurityContextHolder
-                    .getContext()
-                    .getAuthentication()
-                    .getPrincipal()).getEmail();
-            rq.logout();
-            log.info("User - {} was logout.", email);
-        } catch (ServletException e) {
-            log.error("---User wasn't logout. ERROR servlet exception.");
-            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-
-
-    private List<GrantedAuthority> getAuthorities(UserEntity userEntity) {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + userEntity.getRole().name()));
-    }
 }
